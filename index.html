@@ -107877,71 +107877,85 @@ function getMaxStreak(v) {
     }
 
     function openVocabTable() {
-        const currentData = data.filter(v => v.level === currentLevel && isMatchGroup(v) && isMatchLek(v, currentLek) && (!mastery[v.word] || !mastery[v.word].skipped)); 
-        let lekName = `Lektion ${currentLek}`;
-        if (currentLek === 'redemittel') lekName = "Redemittel";
-        if (currentLek === 'advanced') lekName = "Wortschatz +";
-        document.getElementById('vocab-table-title').innerText = `📖 ${lekName} (${currentLevel}) - ${currentData.length} Wörter`;
+    const currentData = data.filter(v => v.level === currentLevel && isMatchGroup(v) && isMatchLek(v, currentLek) && (!mastery[v.word] || !mastery[v.word].skipped)); 
+    let lekName = `Lektion ${currentLek}`;
+    if (currentLek === 'redemittel') lekName = "Redemittel";
+    if (currentLek === 'advanced') lekName = "Wortschatz +";
+    document.getElementById('vocab-table-title').innerText = `📖 ${lekName} (${currentLevel}) - ${currentData.length} Wörter`;
 
-        const container = document.getElementById('vocab-table-content');
-        if (currentData.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:#94a3b8; padding: 20px;">Keine Wörter in dieser Lektion.</div>`;
-        } else {
-            container.innerHTML = currentData.map((v, index) => `
-                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
-                    <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 10px; margin-bottom: 12px;">
-                        <div style="display: flex; align-items: center; gap: 8px; color: var(--primary); font-size: 18px; font-weight: 800; flex-wrap: wrap;">
-    ${index + 1}. ${v.word} 
-    <button onclick="toggleSaveGlobal('${v.word.replace(/'/g, "\\'")}')" style="background: ${mastery[v.word] && mastery[v.word].saved ? 'rgba(250, 204, 21, 0.1)' : 'rgba(255, 255, 255, 0.06)'}; border: 1px solid ${mastery[v.word] && mastery[v.word].saved ? 'rgba(250, 204, 21, 0.5)' : 'rgba(255, 255, 255, 0.15)'}; border-radius: 8px; padding: 2px 8px; font-size: 12px; cursor: pointer; transition: all 0.2s;">
-        ${mastery[v.word] && mastery[v.word].saved ? '💛' : '🤍'}
-    </button>
-    <span style="font-size: 12px; color: #94a3b8; font-weight: normal; font-style: italic; display: inline-block;">${v.forms || ''}</span>
-</div>
-                        ${!isNurDeutsch ? `
-                        <div style="color: var(--success); font-weight: 700; font-size: 15px; text-align: right; margin-left: 10px;">
-                            ${v.vnword || ''}
-                        </div>` : ''}
+    const container = document.getElementById('vocab-table-content');
+    if (currentData.length === 0) {
+        container.innerHTML = `<div style="text-align:center; color:#94a3b8; padding: 20px;">Keine Wörter in dieser Lektion.</div>`;
+    } else {
+        container.innerHTML = currentData.map((v, index) => `
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 10px; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px; color: var(--primary); font-size: 18px; font-weight: 800; flex-wrap: wrap;">
+                        ${index + 1}. ${v.word} 
+                        <span onclick="event.stopPropagation(); speakGerman('${v.word.replace(/'/g, "\\'")}')" style="cursor:pointer; font-size: 16px;" title="Nghe từ">🔊</span>
+                        <button onclick="toggleSaveGlobal('${v.word.replace(/'/g, "\\'")}')" style="background: ${mastery[v.word] && mastery[v.word].saved ? 'rgba(250, 204, 21, 0.1)' : 'rgba(255, 255, 255, 0.06)'}; border: 1px solid ${mastery[v.word] && mastery[v.word].saved ? 'rgba(250, 204, 21, 0.5)' : 'rgba(255, 255, 255, 0.15)'}; border-radius: 8px; padding: 2px 8px; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                            ${mastery[v.word] && mastery[v.word].saved ? '💛' : '🤍'}
+                        </button>
+                        <span style="font-size: 12px; color: #94a3b8; font-weight: normal; font-style: italic; display: inline-block;">${v.forms || ''}</span>
                     </div>
-
-                    <div style="margin-bottom: 12px;">
-                        <div style="color: #f8fafc; font-weight: bold; font-size: 15px;">${v.ans || ''}</div>
-                        ${!isNurDeutsch ? `<div style="color: #cbd5e1; font-size: 13.5px; margin-top: 2px;">${v.vnans || ''}</div>` : ''}
-                    </div>
-
-                    ${v.giai_thich_dong_nghia ? `
-                    <div style="background: rgba(56, 189, 248, 0.1); border-left: 3px solid #38bdf8; padding: 10px; border-radius: 8px; margin-bottom: 12px;">
-                        <div style="color: #38bdf8; font-weight: bold; font-size: 13px; margin-bottom: 4px;">🔄 Synonyme: <span style="color:#fff">${v.dong_nghia_b1 || ''}</span> (B1) / <span style="color:#fff">${v.dong_nghia_b2 || ''}</span> (B2)</div>
-                        ${!isNurDeutsch ? `<div style="color: #e0f2fe; font-size: 12.5px; font-style: italic; line-height: 1.4;">${v.giai_thich_dong_nghia}</div>` : ''}
+                    ${!isNurDeutsch ? `
+                    <div style="color: var(--success); font-weight: 700; font-size: 15px; text-align: right; margin-left: 10px;">
+                        ${v.vnword || ''}
                     </div>` : ''}
-
-                    ${v.ant && v.ant !== '-' ? `
-                    <div style="color: #fbbf24; font-size: 13px; font-weight: bold; margin-bottom: 12px;">
-                        ⚔️ Gegenteil: <span style="color: #fde047; margin-left: 4px; font-size: 14px;">${v.ant}</span>
-                    </div>` : ''}
-
-                    <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px;">
-                        ${v.b1_ex && v.b1_ex !== '-' ? `
-                        <div style="margin-bottom: ${v.b2_ex && v.b2_ex !== '-' ? '10px' : '0'}; padding-bottom: ${v.b2_ex && v.b2_ex !== '-' ? '10px' : '0'}; border-bottom: ${v.b2_ex && v.b2_ex !== '-' ? '1px dashed rgba(255,255,255,0.1)' : 'none'};">
-                            <div style="color: #f8fafc; font-size: 13.5px; margin-bottom: 3px;"><b>B1:</b> ${v.b1_ex}</div>
-                            ${!isNurDeutsch ? `<div style="color: #94a3b8; font-size: 12.5px; font-style: italic;">${v.vn_b1 || ''}</div>` : ''}
-                        </div>` : ''}
-                        
-                        ${v.b2_ex && v.b2_ex !== '-' ? `
-                        <div>
-                            <div style="color: #f8fafc; font-size: 13.5px; margin-bottom: 3px;"><b>B2:</b> ${v.b2_ex}</div>
-                            ${!isNurDeutsch ? `<div style="color: #94a3b8; font-size: 12.5px; font-style: italic;">${v.vn_b2 || ''}</div>` : ''}
-                        </div>` : ''}
-                    </div>
                 </div>
-            `).join('');
-        }
 
-        document.getElementById('vocab-table-modal').classList.remove('hidden');
+                <div style="margin-bottom: 12px;">
+                    <div style="color: #f8fafc; font-weight: bold; font-size: 15px;">
+                        ${v.ans || ''}
+                        ${v.ans ? `<span onclick="event.stopPropagation(); speakGerman('${v.ans.replace(/'/g, "\\'")}')" style="cursor:pointer; font-size: 14px; margin-left: 4px;" title="Nghe cấu trúc">🔊</span>` : ''}
+                    </div>
+                    ${!isNurDeutsch ? `<div style="color: #cbd5e1; font-size: 13.5px; margin-top: 2px;">${v.vnans || ''}</div>` : ''}
+                </div>
+
+                ${v.giai_thich_dong_nghia ? `
+                <div style="background: rgba(56, 189, 248, 0.1); border-left: 3px solid #38bdf8; padding: 10px; border-radius: 8px; margin-bottom: 12px;">
+                    <div style="color: #38bdf8; font-weight: bold; font-size: 13px; margin-bottom: 4px;">
+                        🔄 Synonyme: 
+                        ${v.dong_nghia_b1 ? `<span style="color:#fff">${v.dong_nghia_b1}</span> <span onclick="event.stopPropagation(); speakGerman('${v.dong_nghia_b1.replace(/'/g, "\\'")}')" style="cursor:pointer" title="Nghe từ B1">🔊</span> (B1)` : ''} 
+                        ${v.dong_nghia_b2 ? `/ <span style="color:#fff">${v.dong_nghia_b2}</span> <span onclick="event.stopPropagation(); speakGerman('${v.dong_nghia_b2.replace(/'/g, "\\'")}')" style="cursor:pointer" title="Nghe từ B2">🔊</span> (B2)` : ''}
+                    </div>
+                    ${!isNurDeutsch ? `<div style="color: #e0f2fe; font-size: 12.5px; font-style: italic; line-height: 1.4;">${v.giai_thich_dong_nghia}</div>` : ''}
+                </div>` : ''}
+
+                ${v.ant && v.ant !== '-' ? `
+                <div style="color: #fbbf24; font-size: 13px; font-weight: bold; margin-bottom: 12px;">
+                    ⚔️ Gegenteil: <span style="color: #fde047; margin-left: 4px; font-size: 14px;">${v.ant}</span>
+                    <span onclick="event.stopPropagation(); speakGerman('${v.ant.replace(/'/g, "\\'")}')" style="cursor:pointer; margin-left: 4px;" title="Nghe từ trái nghĩa">🔊</span>
+                </div>` : ''}
+
+                <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px;">
+                    ${v.b1_ex && v.b1_ex !== '-' ? `
+                    <div style="margin-bottom: ${v.b2_ex && v.b2_ex !== '-' ? '10px' : '0'}; padding-bottom: ${v.b2_ex && v.b2_ex !== '-' ? '10px' : '0'}; border-bottom: ${v.b2_ex && v.b2_ex !== '-' ? '1px dashed rgba(255,255,255,0.1)' : 'none'};">
+                        <div style="color: #f8fafc; font-size: 13.5px; margin-bottom: 3px;">
+                            <b>B1:</b> ${v.b1_ex}
+                            <span onclick="event.stopPropagation(); speakGerman('${v.b1_ex.replace(/'/g, "\\'")}')" style="cursor:pointer; margin-left: 4px;" title="Nghe ví dụ B1">🔊</span>
+                        </div>
+                        ${!isNurDeutsch ? `<div style="color: #94a3b8; font-size: 12.5px; font-style: italic;">${v.vn_b1 || ''}</div>` : ''}
+                    </div>` : ''}
+                    
+                    ${v.b2_ex && v.b2_ex !== '-' ? `
+                    <div>
+                        <div style="color: #f8fafc; font-size: 13.5px; margin-bottom: 3px;">
+                            <b>B2:</b> ${v.b2_ex}
+                            <span onclick="event.stopPropagation(); speakGerman('${v.b2_ex.replace(/'/g, "\\'")}')" style="cursor:pointer; margin-left: 4px;" title="Nghe ví dụ B2">🔊</span>
+                        </div>
+                        ${!isNurDeutsch ? `<div style="color: #94a3b8; font-size: 12.5px; font-style: italic;">${v.vn_b2 || ''}</div>` : ''}
+                    </div>` : ''}
+                </div>
+            </div>
+        `).join('');
     }
+
+    document.getElementById('vocab-table-modal').classList.remove('hidden');
+}
 
 
 function openSavedVocabTable() {
-    // Lấy toàn bộ từ vựng đã được lưu (saved = true)
     const savedData = data.filter(v => mastery[v.word] && mastery[v.word].saved);
     
     document.getElementById('vocab-table-title').innerText = `💛 Danh sách đã lưu - ${savedData.length} Wörter`;
@@ -107950,12 +107964,12 @@ function openSavedVocabTable() {
     if (savedData.length === 0) {
         container.innerHTML = `<div style="text-align:center; color:#94a3b8; padding: 20px;">Bạn chưa lưu từ vựng nào. Hãy bấm 🤍 khi học để lưu nhé!</div>`;
     } else {
-        // Tái sử dụng lại giao diện của openVocabTable
         container.innerHTML = savedData.map((v, index) => `
             <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
                 <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 10px; margin-bottom: 12px;">
                     <div style="display: flex; align-items: center; gap: 8px; color: var(--primary); font-size: 18px; font-weight: 800; flex-wrap: wrap;">
                         ${index + 1}. ${v.word} 
+                        <span onclick="event.stopPropagation(); speakGerman('${v.word.replace(/'/g, "\\'")}')" style="cursor:pointer; font-size: 16px;" title="Nghe từ">🔊</span>
                         <button onclick="toggleSaveGlobal('${v.word.replace(/'/g, "\\'")}')" style="background: rgba(250, 204, 21, 0.1); border: 1px solid rgba(250, 204, 21, 0.5); border-radius: 8px; padding: 2px 8px; font-size: 12px; cursor: pointer; transition: all 0.2s;">
                             💛
                         </button>
@@ -107963,9 +107977,49 @@ function openSavedVocabTable() {
                     </div>
                     ${!isNurDeutsch ? `<div style="color: var(--success); font-weight: 700; font-size: 15px; text-align: right; margin-left: 10px;">${v.vnword || ''}</div>` : ''}
                 </div>
+
                 <div style="margin-bottom: 12px;">
-                    <div style="color: #f8fafc; font-weight: bold; font-size: 15px;">${v.ans || ''}</div>
+                    <div style="color: #f8fafc; font-weight: bold; font-size: 15px;">
+                        ${v.ans || ''}
+                        ${v.ans ? `<span onclick="event.stopPropagation(); speakGerman('${v.ans.replace(/'/g, "\\'")}')" style="cursor:pointer; font-size: 14px; margin-left: 4px;" title="Nghe cấu trúc">🔊</span>` : ''}
+                    </div>
                     ${!isNurDeutsch ? `<div style="color: #cbd5e1; font-size: 13.5px; margin-top: 2px;">${v.vnans || ''}</div>` : ''}
+                </div>
+
+                ${v.giai_thich_dong_nghia ? `
+                <div style="background: rgba(56, 189, 248, 0.1); border-left: 3px solid #38bdf8; padding: 10px; border-radius: 8px; margin-bottom: 12px;">
+                    <div style="color: #38bdf8; font-weight: bold; font-size: 13px; margin-bottom: 4px;">
+                        🔄 Synonyme: 
+                        ${v.dong_nghia_b1 ? `<span style="color:#fff">${v.dong_nghia_b1}</span> <span onclick="event.stopPropagation(); speakGerman('${v.dong_nghia_b1.replace(/'/g, "\\'")}')" style="cursor:pointer">🔊</span> (B1)` : ''} 
+                        ${v.dong_nghia_b2 ? `/ <span style="color:#fff">${v.dong_nghia_b2}</span> <span onclick="event.stopPropagation(); speakGerman('${v.dong_nghia_b2.replace(/'/g, "\\'")}')" style="cursor:pointer">🔊</span> (B2)` : ''}
+                    </div>
+                    ${!isNurDeutsch ? `<div style="color: #e0f2fe; font-size: 12.5px; font-style: italic; line-height: 1.4;">${v.giai_thich_dong_nghia}</div>` : ''}
+                </div>` : ''}
+
+                ${v.ant && v.ant !== '-' ? `
+                <div style="color: #fbbf24; font-size: 13px; font-weight: bold; margin-bottom: 12px;">
+                    ⚔️ Gegenteil: <span style="color: #fde047; margin-left: 4px; font-size: 14px;">${v.ant}</span>
+                    <span onclick="event.stopPropagation(); speakGerman('${v.ant.replace(/'/g, "\\'")}')" style="cursor:pointer; margin-left: 4px;">🔊</span>
+                </div>` : ''}
+
+                <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px;">
+                    ${v.b1_ex && v.b1_ex !== '-' ? `
+                    <div style="margin-bottom: ${v.b2_ex && v.b2_ex !== '-' ? '10px' : '0'}; padding-bottom: ${v.b2_ex && v.b2_ex !== '-' ? '10px' : '0'}; border-bottom: ${v.b2_ex && v.b2_ex !== '-' ? '1px dashed rgba(255,255,255,0.1)' : 'none'};">
+                        <div style="color: #f8fafc; font-size: 13.5px; margin-bottom: 3px;">
+                            <b>B1:</b> ${v.b1_ex}
+                            <span onclick="event.stopPropagation(); speakGerman('${v.b1_ex.replace(/'/g, "\\'")}')" style="cursor:pointer; margin-left: 4px;">🔊</span>
+                        </div>
+                        ${!isNurDeutsch ? `<div style="color: #94a3b8; font-size: 12.5px; font-style: italic;">${v.vn_b1 || ''}</div>` : ''}
+                    </div>` : ''}
+                    
+                    ${v.b2_ex && v.b2_ex !== '-' ? `
+                    <div>
+                        <div style="color: #f8fafc; font-size: 13.5px; margin-bottom: 3px;">
+                            <b>B2:</b> ${v.b2_ex}
+                            <span onclick="event.stopPropagation(); speakGerman('${v.b2_ex.replace(/'/g, "\\'")}')" style="cursor:pointer; margin-left: 4px;">🔊</span>
+                        </div>
+                        ${!isNurDeutsch ? `<div style="color: #94a3b8; font-size: 12.5px; font-style: italic;">${v.vn_b2 || ''}</div>` : ''}
+                    </div>` : ''}
                 </div>
             </div>
         `).join('');
@@ -108106,13 +108160,11 @@ function openSavedVocabTable() {
 
     function speakGerman(text) {
         if (!text) return;
-        let cleanText = text;
-        if (currentLek !== 'fehler') {
-            cleanText = text.split(',')[0].trim();
-        } else {
-            cleanText = text.trim();
-        }
+        
+        // Giữ nguyên toàn bộ chuỗi text (không cắt tại dấu phẩy nữa)
+        let cleanText = text.trim();
 
+        // Chuẩn hóa các từ viết tắt ngữ pháp để máy đọc đúng từ đầy đủ
         cleanText = cleanText
             .replace(/\+\s*(jmdm\.|jmdn\.|jmd\.|etw\.|etwas)\s*\((Da|Akk|D|A|Dat)\)/gi, (match, obj, kasus) => {
                 let k = /Da|D|Dat/i.test(kasus) ? "Dativ" : /Gen|G/i.test(kasus) ? "Genitiv" : "Akkusativ";
@@ -108129,9 +108181,12 @@ function openSavedVocabTable() {
         let voices = window.speechSynthesis.getVoices();
         let stefanVoice = voices.find(v => v.name.includes("Stefan") && v.lang.startsWith("de"));
         let defaultGermanMale = voices.find(v => v.lang.startsWith("de") && v.name.toLowerCase().includes("male"));
-        let anyGermanVoice = voices.find(v => v.lang === "de-DE" || v.lang === "de-AT");
+        let anyGermanVoice = voices.find(v => v.lang.startsWith("de"));
 
         let selectedVoice = stefanVoice || defaultGermanMale || anyGermanVoice;
+
+        // Dừng âm thanh đang đọc dở (nếu có) để đọc ngay câu mới vừa bấm
+        window.speechSynthesis.cancel();
 
         if (selectedVoice) {
             let utterance = new SpeechSynthesisUtterance(cleanText);
@@ -108763,99 +108818,123 @@ function openSavedVocabTable() {
     }
 
     function showDetailFeedback(v, isCorrect, offerLifeline = false) {
-        const centerMain = document.getElementById('fb');
-        const centerSyn = document.getElementById('fb-center-synonym');
-        const centerAnt = document.getElementById('fb-center-antonym');
-        const leftColBox = document.getElementById('left-col');
-        const leftContent = document.getElementById('fb-left');
-        
-        centerSyn.style.display = 'none';
-        centerAnt.style.display = 'none';
-        leftColBox.style.visibility = 'hidden';
-        
-        const primaryDisplay = currentStep === 1 ? v.word : v.ans;
-        const secondaryDisplay = currentStep === 1 ? v.ans : v.word;
+    const centerMain = document.getElementById('fb');
+    const centerSyn = document.getElementById('fb-center-synonym');
+    const centerAnt = document.getElementById('fb-center-antonym');
+    const leftColBox = document.getElementById('left-col');
+    const leftContent = document.getElementById('fb-left');
+    
+    centerSyn.style.display = 'none';
+    centerAnt.style.display = 'none';
+    leftColBox.style.visibility = 'hidden';
+    
+    const primaryDisplay = currentStep === 1 ? v.word : v.ans;
+    const secondaryDisplay = currentStep === 1 ? v.ans : v.word;
 
-        let warningText = "⚠️ Falsch! Bitte 3 Mal richtig eingeben!";
-        if (isNoStreakMode) {
-            warningText = "⚠️ Falsch! Bitte Eingabetaste drücken.";
-        }
-        if (offerLifeline && lifelines > 0) {
-            warningText = `⚠️ Falsch! Rettungsring 🛟 nutzen oder Eingabetaste drücken.`;
-        }
+    let warningText = "⚠️ Falsch! Bitte 3 Mal richtig eingeben!";
+    if (isNoStreakMode) {
+        warningText = "⚠️ Falsch! Bitte Eingabetaste drücken.";
+    }
+    if (offerLifeline && lifelines > 0) {
+        warningText = `⚠️ Falsch! Rettungsring 🛟 nutzen oder Eingabetaste drücken.`;
+    }
 
-        centerMain.innerHTML = `
-            <div style="cursor:default; padding:12px; background:rgba(255,255,255,0.05); border-radius:12px; text-align:left; border: 1px solid ${offerLifeline ? 'var(--warning)' : (isCorrect ? 'var(--success)' : 'var(--danger)')}">
-                <div style="display: flex; justify-content: space-between; gap: 15px;">
-                    <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
-                        <div style="color:var(--primary); font-weight:700; font-size:16px;">
-                            🇩🇪 ${primaryDisplay} <span onclick="event.stopPropagation(); speakGerman('${primaryDisplay.replace(/'/g, "\\'")}')" style="cursor:pointer">🔊</span>
-                        </div>
-                        ${!isCorrect ? `<div style="font-size:14px; color:#f8fafc; font-weight: 500;">${secondaryDisplay}</div>` : ''}
-                        <div style="font-size:11px; opacity:0.6; font-style: italic;">${v.forms || ''}</div>
+    centerMain.innerHTML = `
+        <div style="cursor:default; padding:12px; background:rgba(255,255,255,0.05); border-radius:12px; text-align:left; border: 1px solid ${offerLifeline ? 'var(--warning)' : (isCorrect ? 'var(--success)' : 'var(--danger)')}">
+            <div style="display: flex; justify-content: space-between; gap: 15px;">
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                    <div style="color:var(--primary); font-weight:700; font-size:16px;">
+                        🇩🇪 ${primaryDisplay} <span onclick="event.stopPropagation(); speakGerman('${primaryDisplay.replace(/'/g, "\\'")}')" style="cursor:pointer" title="Nghe tiếng Đức">🔊</span>
                     </div>
-                    
-                    <div style="flex: 1; text-align: right; display: flex; flex-direction: column; gap: 6px;">
-                        ${!isNurDeutsch ? `
-                            <div style="font-size:14px; font-weight: 700; color:var(--success);">${v.vnword || ''}</div>
-                            <div style="font-size:13px; color:#e2e8f0; line-height: 1.4;">${v.vnans || ''}</div>
-                        ` : `
-                            <div style="font-size:13px; color:#e2e8f0; line-height: 1.4; font-style: italic;">${v.ans || ''}</div>
-                        `}
-                    </div>
+                    ${!isCorrect ? `<div style="font-size:14px; color:#f8fafc; font-weight: 500;">${secondaryDisplay} <span onclick="event.stopPropagation(); speakGerman('${secondaryDisplay.replace(/'/g, "\\'")}')" style="cursor:pointer" title="Nghe tiếng Đức">🔊</span></div>` : ''}
+                    <div style="font-size:11px; opacity:0.6; font-style: italic;">${v.forms || ''}</div>
                 </div>
-                ${isCorrect ? `<p style="color:var(--success); font-size:11px; margin-top:10px; text-align:center;">✨ Richtig! ✨</p>` : ''}
+                
+                <div style="flex: 1; text-align: right; display: flex; flex-direction: column; gap: 6px;">
+                    ${!isNurDeutsch ? `
+                        <div style="font-size:14px; font-weight: 700; color:var(--success);">${v.vnword || ''}</div>
+                        <div style="font-size:13px; color:#e2e8f0; line-height: 1.4;">${v.vnans || ''}</div>
+                    ` : `
+                        <div style="font-size:13px; color:#e2e8f0; line-height: 1.4; font-style: italic;">${v.ans || ''}</div>
+                    `}
+                </div>
             </div>
-        `;
+            ${isCorrect ? `<p style="color:var(--success); font-size:11px; margin-top:10px; text-align:center;">✨ Richtig! ✨</p>` : ''}
+        </div>
+    `;
 
-        if (!isCorrect) {
-            if (v.giai_thich_dong_nghia) {
-                centerSyn.style.display = 'block';
-                centerSyn.innerHTML = `
-                    <span style="font-size: 13px; color: #38bdf8; font-weight: bold; text-transform: uppercase;">Synonyme:</span>
-                    <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 6px;">
-                        <div style="background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 6px;">
+    if (!isCorrect) {
+        if (v.giai_thich_dong_nghia) {
+            centerSyn.style.display = 'block';
+            centerSyn.innerHTML = `
+                <span style="font-size: 13px; color: #38bdf8; font-weight: bold; text-transform: uppercase;">Synonyme:</span>
+                <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 6px;">
+                    ${v.dong_nghia_b1 ? `
+                    <div style="background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
                             <span style="font-size: 14px; color: #bae6fd; font-weight: bold;">B1:</span> 
-                            <b style="font-size: 19px; color: #ffffff; margin-left: 4px;">${v.dong_nghia_b1 || ''}</b>
+                            <b style="font-size: 19px; color: #ffffff; margin-left: 4px;">${v.dong_nghia_b1}</b>
                         </div>
-                        <div style="background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 6px;">
-                            <span style="font-size: 14px; color: #bae6fd; font-weight: bold;">B2:</span> 
-                            <b style="font-size: 19px; color: #ffffff; margin-left: 4px;">${v.dong_nghia_b2 || ''}</b>
-                        </div>
-                    </div>
-                `;
-            }
-
-            if (v.ant && v.ant !== "-") {
-                centerAnt.style.display = 'block';
-                centerAnt.innerHTML = `
-                    <span style="font-size: 13px; color: #fbbf24; font-weight: bold; text-transform: uppercase;">Gegenteil:</span><br>
-                    <b style="font-size: 20px; color: #fde047; letter-spacing: 0.5px; display: inline-block; margin-top: 6px;">${v.ant}</b>
-                `;
-            }
-
-            leftColBox.style.visibility = 'visible';
-            let leftHtml = "";
-            
-            if (v.giai_thich_dong_nghia && !isNurDeutsch) {
-					leftHtml += `<div style="font-size: 13.5px; color: #e0f2fe; opacity: 0.95; font-style: italic; margin-bottom: 8px; line-height: 1.4;">${v.giai_thich_dong_nghia}</div>`;
-				}
-
-				leftHtml += `
-					<div style="font-size:13px; border-top:1px solid var(--border); padding-top:8px; margin-bottom: 10px;">
-                    <p style="margin:0 0 4px 0; color: #f8fafc; font-size: 14px;"><b>B1+:</b> ${v.b1_ex || ''}</p>
-                    ${!isNurDeutsch ? `<p style="margin:0 0 15px 0; font-size:13px; opacity:0.7; font-style: italic;">${v.vn_b1 || ''}</p>` : ''}
+                        <span onclick="event.stopPropagation(); speakGerman('${v.dong_nghia_b1.replace(/'/g, "\\'")}')" style="cursor:pointer; font-size: 16px;">🔊</span>
+                    </div>` : ''}
                     
-                    <p style="margin:0 0 4px 0; color: #f8fafc; font-size: 14px;"><b>B2:</b> ${v.b2_ex || ''}</p>
-                    ${!isNurDeutsch ? `<p style="margin:0 0 5px 0; font-size:13px; opacity:0.7; font-style: italic;">${v.vn_b2 || ''}</p>` : ''}
-                </div>
-                <div style="color:${offerLifeline ? 'var(--warning)' : 'var(--danger)'}; font-size:13px; margin-top:auto; text-align:left; font-weight:bold; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; line-height: 1.4;">
-                    ${warningText}
+                    ${v.dong_nghia_b2 ? `
+                    <div style="background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span style="font-size: 14px; color: #bae6fd; font-weight: bold;">B2:</span> 
+                            <b style="font-size: 19px; color: #ffffff; margin-left: 4px;">${v.dong_nghia_b2}</b>
+                        </div>
+                        <span onclick="event.stopPropagation(); speakGerman('${v.dong_nghia_b2.replace(/'/g, "\\'")}')" style="cursor:pointer; font-size: 16px;">🔊</span>
+                    </div>` : ''}
                 </div>
             `;
-            leftContent.innerHTML = leftHtml;
         }
+
+        if (v.ant && v.ant !== "-") {
+            centerAnt.style.display = 'block';
+            centerAnt.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="font-size: 13px; color: #fbbf24; font-weight: bold; text-transform: uppercase;">Gegenteil:</span><br>
+                        <b style="font-size: 20px; color: #fde047; letter-spacing: 0.5px; display: inline-block; margin-top: 6px;">${v.ant}</b>
+                    </div>
+                    <span onclick="event.stopPropagation(); speakGerman('${v.ant.replace(/'/g, "\\'")}')" style="cursor:pointer; font-size: 18px;">🔊</span>
+                </div>
+            `;
+        }
+
+        leftColBox.style.visibility = 'visible';
+        let leftHtml = "";
+        
+        if (v.giai_thich_dong_nghia && !isNurDeutsch) {
+            leftHtml += `<div style="font-size: 13.5px; color: #e0f2fe; opacity: 0.95; font-style: italic; margin-bottom: 8px; line-height: 1.4;">${v.giai_thich_dong_nghia}</div>`;
+        }
+
+        leftHtml += `
+            <div style="font-size:13px; border-top:1px solid var(--border); padding-top:8px; margin-bottom: 10px;">
+                ${v.b1_ex && v.b1_ex !== '-' ? `
+                <p style="margin:0 0 4px 0; color: #f8fafc; font-size: 14px;">
+                    <b>B1+:</b> ${v.b1_ex} 
+                    <span onclick="event.stopPropagation(); speakGerman('${v.b1_ex.replace(/'/g, "\\'")}')" style="cursor:pointer; margin-left: 4px;" title="Nghe câu B1">🔊</span>
+                </p>
+                ${!isNurDeutsch ? `<p style="margin:0 0 15px 0; font-size:13px; opacity:0.7; font-style: italic;">${v.vn_b1 || ''}</p>` : ''}
+                ` : ''}
+                
+                ${v.b2_ex && v.b2_ex !== '-' ? `
+                <p style="margin:0 0 4px 0; color: #f8fafc; font-size: 14px;">
+                    <b>B2:</b> ${v.b2_ex} 
+                    <span onclick="event.stopPropagation(); speakGerman('${v.b2_ex.replace(/'/g, "\\'")}')" style="cursor:pointer; margin-left: 4px;" title="Nghe câu B2">🔊</span>
+                </p>
+                ${!isNurDeutsch ? `<p style="margin:0 0 5px 0; font-size:13px; opacity:0.7; font-style: italic;">${v.vn_b2 || ''}</p>` : ''}
+                ` : ''}
+            </div>
+            <div style="color:${offerLifeline ? 'var(--warning)' : 'var(--danger)'}; font-size:13px; margin-top:auto; text-align:left; font-weight:bold; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; line-height: 1.4;">
+                ${warningText}
+            </div>
+        `;
+        leftContent.innerHTML = leftHtml;
     }
+}
 
     window.addEventListener('keydown', (e) => {
     // XỬ LÝ PHÍM ESC (Thoát/Đóng)
