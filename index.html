@@ -10,26 +10,24 @@
     
     <style>
         :root {
-            --bg: #090d16;
-            --glass: rgba(22, 30, 49, 0.75);
-            --primary: #c084fc;
-            --success: #4ade80;
-            --danger: #f87171;
-            --warning: #fb923c;
-            --warning-selected: #ea580c; 
-            --text: #f1f5f9;
-            --border: rgba(255, 255, 255, 0.08);
-        }
+			--bg: #0b0f19; /* Tông Slate/Graphite tối cao cấp */
+			--glass: rgba(17, 24, 39, 0.65); /* Kính mờ đục vừa phải */
+			--primary: #818cf8; /* Xanh tím Indigo hiện đại, dịu mắt */
+			--success: #34d399;
+			--danger: #f87171;
+			--warning: #fbbf24;
+			--warning-selected: #d97706; 
+			--text: #f8fafc;
+			--border: rgba(255, 255, 255, 0.07); /* Viền mỏng tinh tế */
+		}
 
-        body {
-            font-family: 'Nunito', Roboto, Helvetica, Arial, sans-serif;
-            background: radial-gradient(circle at top right, #14112e, #090d16);
-            color: var(--text);
-            margin: 0;
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-        }
+		body {
+			font-family: 'Nunito', sans-serif;
+			background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0b0f19 70%);
+			color: var(--text);
+			margin: 0;
+			padding: 15px;
+		}
 
         .container { 
             width: 100%; 
@@ -57,6 +55,44 @@
             .quiz-layout { grid-template-columns: 1fr; }
             #menu-screen, #finish-screen { max-width: 100%; }
         }
+
+
+		@media (max-width: 600px) {
+			body {
+				padding: 8px; /* Giảm lề viền màn hình */
+			}
+
+			.glass-card {
+				padding: 12px 14px; /* Thu gọn khoảng trống bên trong khung */
+				margin-bottom: 10px;
+				border-radius: 16px; /* Bán kính bo góc nhỏ hơn cho màn hình nhỏ */
+			}
+
+			/* Chuyển nhóm 4 nút thao tác thành 2 hàng 2 cột để chữ rộng rãi */
+			.btn-group {
+				grid-template-columns: repeat(2, 1fr);
+				gap: 6px;
+			}
+
+			.btn-action {
+				padding: 10px 6px;
+				font-size: 11.5px;
+			}
+
+			/* Giảm kích thước font khung từ vựng chính để không bị đè dòng */
+			.quiz-vn {
+				font-size: 19px;
+				margin: 6px 0 10px 0;
+			}
+
+			textarea#ans-input {
+				padding: 10px;
+				font-size: 16px;
+				min-height: 70px;
+			}
+		}
+
+
 
         .glass-card {
             background: var(--glass);
@@ -524,10 +560,17 @@
                 <span style="font-size: 14px; font-weight: bold;">📖 Danh sách từ vựng - Vokabelliste</span>
             </button>
 
-            <button class="btn-main flex-center-col" style="padding: 9px;" onclick="startSession('normal')">
-                <span style="font-size: 14px;">Học</span>
-                <span style="font-size: 14px; font-weight: normal; opacity: 0.8; margin-top: 3px;">Beginn 5 Wörter</span>
-            </button>
+            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+				<button class="btn-main flex-center-col" style="flex: 1; padding: 9px;" onclick="startSession('normal')">
+					<span style="font-size: 14px;">Học mới</span>
+					<span style="font-size: 12px; font-weight: normal; opacity: 0.8; margin-top: 3px;">5 Wörter</span>
+				</button>
+				
+				<button class="btn-main flex-center-col" style="flex: 1; padding: 9px; background: linear-gradient(135deg, #f59e0b, #d97706);" onclick="startSession('saved')">
+					<span style="font-size: 14px;">Ôn từ đã lưu</span>
+					<span style="font-size: 12px; font-weight: normal; opacity: 0.8; margin-top: 3px;">Gespeicherte Liste</span>
+				</button>
+			</div>
             
             <div style="display: flex; gap: 8px; margin-top: 8px;">
                 <button class="btn-main flex-center-col" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf); flex: 1;" onclick="startSession('mixed')">
@@ -614,11 +657,17 @@
                     <div id="dots" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px;">
                     </div>
                     
-                    <!-- NÚT BỎ QUA TRONG LÚC HỌC -->
-                    <div style="flex: 1; text-align: right; display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
-                       <span id="btn-skip-word" onclick="skipCurrentWord()" style="display: inline-block; font-size: 12px; font-weight: bold; color: #cbd5e1; background: rgba(255, 255, 255, 0.06); padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.15); transition: all 0.3s; user-select: none; cursor: pointer;">⏭️ Skip</span>
-                       <span id="quiz-lifelines-icons" onclick="useOneLifeline()" style="display: inline-block; font-size: 12px; font-weight: bold; color: #60a5fa; background: rgba(96,165,250,0.1); padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(96,165,250,0.3); transition: all 0.3s; user-select: none; cursor: pointer;">🛟 x 1</span>
-                    </div>
+                   <!-- Cập nhật lại khối div chứa nút Skip thành như sau: -->
+					<div style="flex: 1; text-align: right; display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
+						<!-- Nút lưu từ (Mới) -->
+						<span id="btn-save-word" onclick="toggleSaveCurrentWord()" style="display: inline-block; font-size: 14px; background: rgba(255, 255, 255, 0.06); padding: 5px 8px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.15); transition: all 0.3s; user-select: none; cursor: pointer;" title="Speichern">Favorit</span>
+						
+						<!-- Nút Skip cũ -->
+						<span id="btn-skip-word" onclick="skipCurrentWord()" style="display: inline-block; font-size: 12px; font-weight: bold; color: #cbd5e1; background: rgba(255, 255, 255, 0.06); padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.15); transition: all 0.3s; user-select: none; cursor: pointer;">Skip</span>
+						
+						<!-- Nút Phao cứu sinh cũ -->
+						<span id="quiz-lifelines-icons" onclick="useOneLifeline()" style="display: inline-block; font-size: 12px; font-weight: bold; color: #60a5fa; background: rgba(96,165,250,0.1); padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(96,165,250,0.3); transition: all 0.3s; user-select: none; cursor: pointer;">🛟x1</span>
+					</div>
                 </div>
 
                 <div id="typing-guide-box" class="hidden" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 12px; font-size: 11px; color: #cbd5e1; border-radius: 12px; margin-bottom: 12px; text-align: left; max-height: 200px; overflow-y: auto;">
@@ -679,6 +728,23 @@
         </div>
     </div>
 </div>
+
+
+<!-- MODAL THÔNG BÁO TÙY CHỈNH -->
+<div id="custom-alert-modal" class="modal-overlay hidden" onclick="closeCustomAlert()">
+    <div class="modal-content flex-center-col" style="max-width: 380px; text-align: center; padding: 30px 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8);" onclick="event.stopPropagation()">
+        <div style="font-size: 45px; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));" id="alert-icon">🔔</div>
+        <h3 id="alert-title" style="color: #fff; font-size: 20px; margin-bottom: 10px; border: none; padding: 0; justify-content: center; width: 100%;">Thông báo</h3>
+        <p id="alert-message" style="color: #cbd5e1; font-size: 14.5px; line-height: 1.5; margin-bottom: 25px;">Nội dung thông báo</p>
+        <button class="btn-main" style="padding: 12px 30px; width: auto; font-size: 15px; border-radius: 12px;" onclick="closeCustomAlert()">Đã hiểu (OK)</button>
+    </div>
+</div>
+
+
+
+
+
+
 
 <div id="guide-modal" class="modal-overlay hidden" onclick="closeGuide()">
     <div class="modal-content" onclick="event.stopPropagation()">
@@ -754,6 +820,24 @@
         <button class="btn-main" style="padding: 12px; font-size: 14px; border-radius: 12px;" onclick="handleCloseGuideButton()">Đóng lại (Schließen)</button>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <div id="vocab-table-modal" class="modal-overlay hidden" onclick="closeVocabTable()">
     <div class="modal-content" style="max-width: 700px; max-height: 90vh; padding: 0; display: flex; flex-direction: column;" onclick="event.stopPropagation()">
@@ -107609,6 +107693,10 @@ function getMaxStreak(v) {
         `).join('');
     }
 
+
+
+
+
     function toggleCustomDropdown() {
         const wrapper = document.getElementById('group-wrapper');
         if (wrapper) wrapper.classList.toggle('open');
@@ -108117,45 +108205,75 @@ function getMaxStreak(v) {
         isNoStreakMode = (mode === 'quick');
 
         let availablePool = [];
+		
+		
+		
+		
+		
+		
+		
 
-        if (isMixedMode) {
-            availablePool = data.filter(v => {
-                if (v.level !== currentLevel || !isMatchGroup(v)) return false;
-                const matchTab = isMatchLek(v, currentLek);
-                return matchTab && mastery[v.word] && mastery[v.word].a && mastery[v.word].s >= getMaxStreak(v) && !mastery[v.word].skipped;
-            });
-            if (availablePool.length === 0) {
-                alert("Bạn chưa có từ nào ở cấp độ, nhóm và phần này đạt đủ Streak để làm bài kiểm tra tổng hợp!");
-                return;
-            }
-        } else {
-            availablePool = data.filter(v => {
-                if (v.level !== currentLevel || !isMatchGroup(v)) return false;
-                if (!mastery[v.word]) mastery[v.word] = { s: 0, w: 0, a: true };
-                return isMatchLek(v, currentLek) && mastery[v.word].a && mastery[v.word].s < getMaxStreak(v) && !mastery[v.word].skipped;
-            });
+					if (mode === 'saved') {
+				// Lọc TẤT CẢ từ đã lưu (Bỏ qua bài học hiện tại để ôn tập toàn diện)
+				availablePool = data.filter(v => mastery[v.word] && mastery[v.word].saved && !mastery[v.word].skipped);
+				if (availablePool.length === 0) {
+					showCustomAlert("Bạn chưa lưu từ vựng nào. Hãy bấm biểu tượng 🤍 khi học để thêm vào danh sách!", "Danh sách rỗng", "💛");
+					return;
+				}
+			} else if (isMixedMode) {
+				availablePool = data.filter(v => {
+					if (v.level !== currentLevel || !isMatchGroup(v)) return false;
+					const matchTab = isMatchLek(v, currentLek);
+					return matchTab && mastery[v.word] && mastery[v.word].a && mastery[v.word].s >= getMaxStreak(v) && !mastery[v.word].skipped;
+				});
+				if (availablePool.length === 0) {
+					showCustomAlert("Bạn chưa có từ nào ở cấp độ, nhóm và phần này đạt đủ Streak để làm bài test!", "Chưa đủ điều kiện", "🔒");
+					return;
+				}
+			} else {
+				availablePool = data.filter(v => {
+					if (v.level !== currentLevel || !isMatchGroup(v)) return false;
+					if (!mastery[v.word]) mastery[v.word] = { s: 0, w: 0, a: true };
+					return isMatchLek(v, currentLek) && mastery[v.word].a && mastery[v.word].s < getMaxStreak(v) && !mastery[v.word].skipped;
+				});
+				if (availablePool.length === 0) {
+					showCustomAlert("Chúc mừng! Bạn đã học thuộc hết các từ vựng đang chọn ở cấp độ, nhóm & bài học này!", "Hoàn thành", "🎉");
+					return;
+				}
+			}
 
-            if (availablePool.length === 0) {
-                alert("Chúc mừng! Bạn đã học thuộc hết các từ vựng đang chọn ở cấp độ, nhóm & bài học này!");
-                return;
-            }
-        }
+			// Xử lý random và bốc số lượng từ
+			if (isMixedMode) {
+				availablePool.sort((a, b) => {
+					let scoreA = mastery[a.word]?.s || 0;
+					let scoreB = mastery[b.word]?.s || 0;
+					if (scoreA !== scoreB) return scoreA - scoreB;
+					return Math.random() - 0.5;
+				});
+				session = availablePool.slice(0, 15);
+				session.sort(() => Math.random() - 0.5);
+			} else if (mode === 'saved') {
+				// Ưu tiên ôn từ đã lưu có Streak thấp nhất
+				availablePool.sort((a, b) => {
+					let scoreA = mastery[a.word]?.s || 0;
+					let scoreB = mastery[b.word]?.s || 0;
+					if (scoreA !== scoreB) return scoreA - scoreB;
+					return Math.random() - 0.5;
+				});
+				session = availablePool.slice(0, 5); // Lấy tối đa 5 từ
+				session.sort(() => Math.random() - 0.5); // Đảo lộn ngẫu nhiên
+			} else {
+				session = availablePool.slice(0, 5).sort(() => Math.random() - 0.5);
+			}
 
-        if (isMixedMode) {
-            availablePool.sort((a, b) => {
-                let scoreA = mastery[a.word]?.s || 0;
-                let scoreB = mastery[b.word]?.s || 0;
-                if (scoreA !== scoreB) {
-                    return scoreA - scoreB; 
-                }
-                return Math.random() - 0.5; 
-            });
-            
-            session = availablePool.slice(0, 15);
-            session.sort(() => Math.random() - 0.5);
-        } else {
-            session = availablePool.slice(0, 5).sort(() => Math.random() - 0.5);
-        }
+
+
+
+
+
+
+
+
 
         idx = 0; currentStep = 1; penaltyMode = false; penaltyCount = 0; isWaitingForNext = false;
         isOfferingLifeline = false; 
@@ -108338,9 +108456,10 @@ function getMaxStreak(v) {
         inputField.placeholder = currentStep === 1 ? "Gõ từ gốc..." : "Gõ cụm từ đầy đủ...";
         inputField.style.background = "rgba(0,0,0,0.25)";
         
-        updateLifelineUI(); 
-        updateDots();
-        setTimeout(() => inputField.focus(), 50);
+        updateLifelineUI();
+		updateDots();
+		updateSaveButtonUI(); // Thêm dòng này để cập nhật nút trái tim khi chuyển từ
+		setTimeout(() => inputField.focus(), 50);
     }
 
     function updateDots() {
@@ -108657,33 +108776,70 @@ function getMaxStreak(v) {
     }
 
     window.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault(); 
-            if (isTransitioning) return; 
+    // XỬ LÝ PHÍM ESC (Thoát/Đóng)
+    if (e.key === 'Escape' || e.key === 'Esc') {
+        const alertModal = document.getElementById('custom-alert-modal');
+        const vocabModal = document.getElementById('vocab-table-modal');
+        const guideModal = document.getElementById('guide-modal');
+        const skippedModal = document.getElementById('skipped-modal');
+        const analyzerScreen = document.getElementById('analyzer-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const finishScreen = document.getElementById('finish-screen');
 
-            const menuScreen = document.getElementById('menu-screen');
-            const finishScreen = document.getElementById('finish-screen');
-            const quizScreen = document.getElementById('quiz-screen');
-            const input = document.getElementById('ans-input');
-
-            if (!menuScreen.classList.contains('hidden')) { restartLastSession(); return; }
-            if (!finishScreen.classList.contains('hidden')) { restartLastSession(); return; }
-            
-            if (!quizScreen.classList.contains('hidden')) {
-                if (isOfferingLifeline) {
-                    processCheck(); 
-                    return;
-                }
-
-                if (typeof isWaitingForNext !== 'undefined' && isWaitingForNext) {
-                    isWaitingForNext = false;
-                    if (currentStep === 1) { currentStep = 2; } else { currentStep = 1; idx++; }
-                    showWord(); return;
-                }
-                if (input && input.value.trim() !== "") { processCheck(); }
-            }
+        // Đóng theo thứ tự ưu tiên (cái nào đang mở thì đóng cái đó)
+        if (alertModal && !alertModal.classList.contains('hidden')) {
+            closeCustomAlert();
+        } else if (vocabModal && !vocabModal.classList.contains('hidden')) {
+            closeVocabTable();
+        } else if (guideModal && !guideModal.classList.contains('hidden')) {
+            closeGuide();
+        } else if (skippedModal && !skippedModal.classList.contains('hidden')) {
+            closeSkippedModal();
+        } else if (analyzerScreen && !analyzerScreen.classList.contains('hidden')) {
+            closeAnalyzer();
+        } else if (quizScreen && !quizScreen.classList.contains('hidden')) {
+            backToMenu();
+        } else if (finishScreen && !finishScreen.classList.contains('hidden')) {
+            backToMenu();
         }
-    });
+        return; // Dừng lại sau khi ấn Esc
+    }
+
+    // XỬ LÝ PHÍM ENTER (Nộp bài/Tiếp tục)
+    if (e.key === 'Enter') {
+        e.preventDefault(); 
+        // Bỏ qua Enter nếu đang có bảng thông báo Custom Alert mở đè lên
+        const alertModal = document.getElementById('custom-alert-modal');
+        if (alertModal && !alertModal.classList.contains('hidden')) {
+            closeCustomAlert();
+            return;
+        }
+
+        if (isTransitioning) return; 
+
+        const menuScreen = document.getElementById('menu-screen');
+        const finishScreen = document.getElementById('finish-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const input = document.getElementById('ans-input');
+
+        if (!menuScreen.classList.contains('hidden')) { restartLastSession(); return; }
+        if (!finishScreen.classList.contains('hidden')) { restartLastSession(); return; }
+        
+        if (!quizScreen.classList.contains('hidden')) {
+            if (isOfferingLifeline) {
+                processCheck(); 
+                return;
+            }
+
+            if (typeof isWaitingForNext !== 'undefined' && isWaitingForNext) {
+                isWaitingForNext = false;
+                if (currentStep === 1) { currentStep = 2; } else { currentStep = 1; idx++; }
+                showWord(); return;
+            }
+            if (input && input.value.trim() !== "") { processCheck(); }
+        }
+		}
+	});
 
     function renderHeat() {
         const cloud = document.getElementById('heat-cloud');
@@ -109031,6 +109187,62 @@ function analyzeText() {
     
     document.getElementById('analyze-match-list').innerHTML = listHtml || ``;
 }
+
+
+
+function toggleSaveCurrentWord() {
+    if (idx >= session.length || isTransitioning) return;
+    const v = session[idx];
+    
+    if (!mastery[v.word]) mastery[v.word] = { s: 0, w: 0, a: true };
+    mastery[v.word].saved = !mastery[v.word].saved; // Đảo trạng thái lưu
+    
+    save(); // Lưu dữ liệu vào LocalStorage
+    updateSaveButtonUI();
+}
+
+function updateSaveButtonUI() {
+    if (idx >= session.length) return;
+    const v = session[idx];
+    const btn = document.getElementById('btn-save-word');
+    if (btn) {
+        const isSaved = mastery[v.word] && mastery[v.word].saved;
+        btn.innerHTML = isSaved ? '💛' : '🤍';
+        btn.style.borderColor = isSaved ? 'rgba(250, 204, 21, 0.5)' : 'rgba(255, 255, 255, 0.15)';
+        btn.style.background = isSaved ? 'rgba(250, 204, 21, 0.1)' : 'rgba(255, 255, 255, 0.06)';
+    }
+}
+
+
+
+function showCustomAlert(message, title = "Thông báo", icon = "🔔") {
+    document.getElementById('alert-message').innerText = message;
+    document.getElementById('alert-title').innerText = title;
+    document.getElementById('alert-icon').innerText = icon;
+    document.getElementById('custom-alert-modal').classList.remove('hidden');
+}
+
+function closeCustomAlert() {
+    document.getElementById('custom-alert-modal').classList.add('hidden');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     init(); 
 </script>
