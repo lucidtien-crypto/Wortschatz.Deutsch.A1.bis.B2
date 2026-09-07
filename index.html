@@ -555,42 +555,55 @@
                     <span style="font-size: 14px;">🌱 Wortschatz + </span>
                 </button>
             </div>
-            
-            <button class="btn-sub flex-center-col" onclick="openVocabTable()" style="width: 100%; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.05); margin-bottom: 20px; padding: 12px;">
-                <span style="font-size: 14px; font-weight: bold;">📖 Danh sách từ vựng - Vokabelliste</span>
-            </button>
 
-            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-				<button class="btn-main flex-center-col" style="flex: 1; padding: 9px;" onclick="startSession('normal')">
-					<span style="font-size: 14px;">Học mới</span>
-					<span style="font-size: 12px; font-weight: normal; opacity: 0.8; margin-top: 3px;">5 Wörter</span>
-				</button>
-				
-				<button class="btn-main flex-center-col" style="flex: 1; padding: 9px; background: linear-gradient(135deg, #f59e0b, #d97706);" onclick="startSession('saved')">
-					<span style="font-size: 14px;">Ôn từ đã lưu</span>
-					<span style="font-size: 12px; font-weight: normal; opacity: 0.8; margin-top: 3px;">Gespeicherte Liste</span>
-				</button>
-			</div>
-            
-            <div style="display: flex; gap: 8px; margin-top: 8px;">
-                <button class="btn-main flex-center-col" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf); flex: 1;" onclick="startSession('mixed')">
-                    <span style="font-size: 14px;">🔥Kiểm tra (Test)</span>
+<!-- KHỐI 1: CÁC NÚT XEM DANH SÁCH (Đã xóa nút thừa, đổi tên chuẩn) -->
+            <div style="display: flex; gap: 8px; margin-bottom: 24px;">
+                <button class="btn-sub flex-center-col" onclick="openVocabTable()" style="flex: 1; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.05); padding: 12px;">
+                    <span style="font-size: 12.5px; font-weight: bold;">📖 Danh sách từ vựng - Vokabelliste</span>
                 </button>
-                <button class="btn-main flex-center-col" style="background: linear-gradient(135deg, #10b981, #059669); flex: 1;" onclick="startSession('quick')">
-                    <span style="font-size: 14px;">⚡Ôn nhanh - Kurzübersicht</span>
+                <button class="btn-sub flex-center-col" onclick="openSavedVocabTable()" style="flex: 1; color: #facc15; border-color: rgba(250, 204, 21, 0.4); background: rgba(250, 204, 21, 0.05); padding: 12px;">
+                    <span style="font-size: 12.5px; font-weight: bold;">💛 List Đã lưu</span>
                 </button>
             </div>
-            
+
+            <!-- TIÊU ĐỀ PHÂN CÁCH NHẸ NHÀNG -->
+            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; padding-left: 5px;">🚀 Bắt đầu học</div>
+
+            <!-- KHỐI 2: CÁC CHẾ ĐỘ HỌC (Grid 2x2 Cân đối) -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px;">
+                <button class="btn-main flex-center-col" style="padding: 12px;" onclick="startSession('normal')">
+                    <span style="font-size: 14.5px;">Học 5 từ mới</span>
+                    <span style="font-size: 11.5px; font-weight: normal; opacity: 0.8; margin-top: 3px;">Neu lernen</span>
+                </button>
+                
+                <button class="btn-main flex-center-col" style="padding: 12px; background: linear-gradient(135deg, #f59e0b, #d97706);" onclick="startSession('saved')">
+                    <span style="font-size: 14.5px;">Ôn từ đã lưu</span>
+                    <span style="font-size: 11.5px; font-weight: normal; opacity: 0.8; margin-top: 3px;">Favoriten</span>
+                </button>
+                
+                <button class="btn-main flex-center-col" style="padding: 12px; background: linear-gradient(135deg, #3b82f6, #2dd4bf);" onclick="startSession('mixed')">
+                    <span style="font-size: 14.5px;">🔥 Test (15 từ)</span>
+                    <span style="font-size: 11.5px; font-weight: normal; opacity: 0.8; margin-top: 3px;">Gemischt</span>
+                </button>
+                
+                <button class="btn-main flex-center-col" style="padding: 12px; background: linear-gradient(135deg, #10b981, #059669);" onclick="startSession('quick')">
+                    <span style="font-size: 14.5px;">⚡ Ôn lướt</span>
+                    <span style="font-size: 11.5px; font-weight: normal; opacity: 0.8; margin-top: 3px;">Schnell</span>
+                </button>
+            </div>
+
+            <!-- KHỐI 3: NÚT VIẾT VÀ PHÂN TÍCH -->
             <button class="btn-main flex-center-col" style="background: linear-gradient(135deg, #db2777, #9333ea); margin-top: 8px; padding: 12px;" onclick="openAnalyzer()">
                 <span style="font-size: 15px;">✍️ Viết & Phân tích (Schreiben-Check)</span>
             </button>
             
+            <!-- KHỐI 4: SAO LƯU & PHỤC HỒI -->
             <div style="display: flex; gap: 8px; margin-top: 15px;">
-                <button class="btn-sub flex-center-col" style="color: #34d399; border-color: #34d399; font-weight: bold; padding: 6px;" onclick="exportData()">
-                    <span style="font-size: 12px;">💾 Sao lưu - Backup</span>
+                <button class="btn-sub flex-center-col" style="color: #34d399; border-color: #34d399; font-weight: bold; padding: 8px;" onclick="exportData()">
+                    <span style="font-size: 12px;">💾 Sao lưu (Backup)</span>
                 </button>
-                <button class="btn-sub flex-center-col" style="color: #60a5fa; border-color: #60a5fa; font-weight: bold; padding: 6px;" onclick="importData()">
-                    <span style="font-size: 12px;">📂 Phục hồi - Wiederherstellen</span>
+                <button class="btn-sub flex-center-col" style="color: #60a5fa; border-color: #60a5fa; font-weight: bold; padding: 8px;" onclick="importData()">
+                    <span style="font-size: 12px;">📂 Phục hồi (Restore)</span>
                 </button>
             </div>
         </div>
@@ -629,7 +642,13 @@
 
             <div id="dynamic-level-stats" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center;">
             </div>
-
+			
+			<div style="margin-bottom: 20px;">
+				<input type="text" id="global-search-input" placeholder="🔍 Tìm kiếm từ vựng trong tất cả các cấp độ..." oninput="debounceSearch()" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(192, 132, 252, 0.4); background: rgba(0,0,0,0.3); color: #f8fafc; font-family: 'Nunito', sans-serif; font-size: 15px; outline: none; box-sizing: border-box; transition: all 0.3s;">
+				<div id="search-results-container" style="margin-top: 10px; max-height: 250px; overflow-y: auto;"></div>
+			</div>
+			
+			
             <textarea id="analyze-input" placeholder="Viết đoạn văn (Schreiben) tiếng Đức của bạn vào đây..." oninput="debounceAnalyze()"></textarea>
             
             <div id="analyzer-output-container" class="hidden">
@@ -107514,7 +107533,26 @@ function getMaxStreak(v) {
     "group": "mit Dativ & Akkusativ",
     "lek": "morong",
     "ant": "jmdm. etw. nehmen"
-  }
+  },
+
+{
+  "word": "beibehalten",
+  "ans": "etwas beibehalten",
+  "type": "Verb / Động từ",
+  "forms": "behält bei, behielt bei, hat beibehalten",
+  "vnword": "giữ nguyên, duy trì",
+  "vnans": "giữ nguyên cái gì",
+  "dong_nghia_b1": "bewahren",
+  "dong_nghia_b2": "aufrechterhalten",
+  "giai_thich_dong_nghia": "beibehalten chỉ việc giữ nguyên một trạng thái, quy tắc hoặc đoạn mã; bewahren là gìn giữ giá trị; aufrechterhalten là duy trì sự hoạt động liên tục.",
+  "b1_ex": "Sie sollten den alten Code beibehalten.",
+  "vn_b1": "Bạn nên giữ nguyên đoạn mã cũ.",
+  "b2_ex": "Es ist sinnvoll, die ursprüngliche Struktur für Tablets beizubehalten.",
+  "vn_b2": "Rất hợp lý khi giữ nguyên cấu trúc ban đầu cho máy tính bảng.",
+  "level": "B1+",
+  "lek": "morong",
+  "ant": "ändern"
+},
 ];
 
     const ALL_LEVELS = ["A1", "A2", "B1", "B1 Goethe", "B1+", "B2", "B2.1", "B2.2", "C1.1", "C1.2", "Verben", "Mit Präposition"];
@@ -107852,10 +107890,13 @@ function getMaxStreak(v) {
             container.innerHTML = currentData.map((v, index) => `
                 <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
                     <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 10px; margin-bottom: 12px;">
-                        <div style="color: var(--primary); font-size: 18px; font-weight: 800;">
-                            ${index + 1}. ${v.word} 
-                            <span style="font-size: 12px; color: #94a3b8; font-weight: normal; font-style: italic; margin-left: 8px; display: inline-block;">${v.forms || ''}</span>
-                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; color: var(--primary); font-size: 18px; font-weight: 800; flex-wrap: wrap;">
+    ${index + 1}. ${v.word} 
+    <button onclick="toggleSaveGlobal('${v.word.replace(/'/g, "\\'")}')" style="background: ${mastery[v.word] && mastery[v.word].saved ? 'rgba(250, 204, 21, 0.1)' : 'rgba(255, 255, 255, 0.06)'}; border: 1px solid ${mastery[v.word] && mastery[v.word].saved ? 'rgba(250, 204, 21, 0.5)' : 'rgba(255, 255, 255, 0.15)'}; border-radius: 8px; padding: 2px 8px; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+        ${mastery[v.word] && mastery[v.word].saved ? '💛' : '🤍'}
+    </button>
+    <span style="font-size: 12px; color: #94a3b8; font-weight: normal; font-style: italic; display: inline-block;">${v.forms || ''}</span>
+</div>
                         ${!isNurDeutsch ? `
                         <div style="color: var(--success); font-weight: 700; font-size: 15px; text-align: right; margin-left: 10px;">
                             ${v.vnword || ''}
@@ -107897,6 +107938,47 @@ function getMaxStreak(v) {
 
         document.getElementById('vocab-table-modal').classList.remove('hidden');
     }
+
+
+function openSavedVocabTable() {
+    // Lấy toàn bộ từ vựng đã được lưu (saved = true)
+    const savedData = data.filter(v => mastery[v.word] && mastery[v.word].saved);
+    
+    document.getElementById('vocab-table-title').innerText = `💛 Danh sách đã lưu - ${savedData.length} Wörter`;
+    const container = document.getElementById('vocab-table-content');
+    
+    if (savedData.length === 0) {
+        container.innerHTML = `<div style="text-align:center; color:#94a3b8; padding: 20px;">Bạn chưa lưu từ vựng nào. Hãy bấm 🤍 khi học để lưu nhé!</div>`;
+    } else {
+        // Tái sử dụng lại giao diện của openVocabTable
+        container.innerHTML = savedData.map((v, index) => `
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 10px; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px; color: var(--primary); font-size: 18px; font-weight: 800; flex-wrap: wrap;">
+                        ${index + 1}. ${v.word} 
+                        <button onclick="toggleSaveGlobal('${v.word.replace(/'/g, "\\'")}')" style="background: rgba(250, 204, 21, 0.1); border: 1px solid rgba(250, 204, 21, 0.5); border-radius: 8px; padding: 2px 8px; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                            💛
+                        </button>
+                        <span style="font-size: 12px; color: #94a3b8; font-weight: normal; font-style: italic;">(${v.level})</span>
+                    </div>
+                    ${!isNurDeutsch ? `<div style="color: var(--success); font-weight: 700; font-size: 15px; text-align: right; margin-left: 10px;">${v.vnword || ''}</div>` : ''}
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <div style="color: #f8fafc; font-weight: bold; font-size: 15px;">${v.ans || ''}</div>
+                    ${!isNurDeutsch ? `<div style="color: #cbd5e1; font-size: 13.5px; margin-top: 2px;">${v.vnans || ''}</div>` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
+    document.getElementById('vocab-table-modal').classList.remove('hidden');
+}
+
+
+
+
+
+
+
 
     function selectFehler() {
         currentLek = 'fehler';
@@ -108756,11 +108838,11 @@ function getMaxStreak(v) {
             let leftHtml = "";
             
             if (v.giai_thich_dong_nghia && !isNurDeutsch) {
-                leftHtml += `<div style="font-size: 14px; color: #e0f2fe; opacity: 0.95; font-style: italic; margin-bottom: 15px; line-height: 1.5;">${v.giai_thich_dong_nghia}</div>`;
-            }
-            
-            leftHtml += `
-                <div style="font-size:13px; border-top:1px solid var(--border); padding-top:15px; margin-bottom: 15px;">
+					leftHtml += `<div style="font-size: 13.5px; color: #e0f2fe; opacity: 0.95; font-style: italic; margin-bottom: 8px; line-height: 1.4;">${v.giai_thich_dong_nghia}</div>`;
+				}
+
+				leftHtml += `
+					<div style="font-size:13px; border-top:1px solid var(--border); padding-top:8px; margin-bottom: 10px;">
                     <p style="margin:0 0 4px 0; color: #f8fafc; font-size: 14px;"><b>B1+:</b> ${v.b1_ex || ''}</p>
                     ${!isNurDeutsch ? `<p style="margin:0 0 15px 0; font-size:13px; opacity:0.7; font-style: italic;">${v.vn_b1 || ''}</p>` : ''}
                     
@@ -108910,6 +108992,94 @@ function getMaxStreak(v) {
     } }
     
     function resetHeat() { if(confirm("Xóa hoàn toàn heatmap?")) { data.forEach(v => { if (mastery[v.word]) mastery[v.word].w = 0; }); save(); renderHeat(); } }
+
+
+
+let searchTimeout;
+function debounceSearch() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(executeGlobalSearch, 300);
+}
+
+function executeGlobalSearch() {
+    const query = document.getElementById('global-search-input').value.toLowerCase().trim();
+    const container = document.getElementById('search-results-container');
+    
+    if (!query) {
+        container.innerHTML = '';
+        return;
+    }
+
+    // Tìm trong toàn bộ dữ liệu (từ gốc, nghĩa Tiếng Việt, cấu trúc)
+    const results = data.filter(v => 
+        (v.word && v.word.toLowerCase().includes(query)) || 
+        (v.vnword && v.vnword.toLowerCase().includes(query)) ||
+        (v.ans && v.ans.toLowerCase().includes(query))
+    ).slice(0, 30); // Giới hạn 30 kết quả để giao diện không bị giật
+
+    if (results.length === 0) {
+        container.innerHTML = '<div style="color: #94a3b8; font-size: 13px; text-align: center; padding: 10px;">Không tìm thấy kết quả phù hợp.</div>';
+        return;
+    }
+
+    container.innerHTML = results.map(item => {
+        if (!mastery[item.word]) mastery[item.word] = { s: 0, w: 0, a: true };
+        const isSaved = mastery[item.word].saved;
+        
+        return `
+        <div class="match-item">
+            <div style="flex: 1;">
+                <b style="color: #fff; font-size: 15px;">${item.word}</b> <span style="font-size: 11px; color: #94a3b8;">(${item.level})</span>
+                ${item.ans && item.ans !== item.word ? `<div style="font-size: 13px; color: #38bdf8; font-weight: bold; margin-top: 2px;">${item.ans}</div>` : ''}
+                <div style="font-size: 12px; color: #94a3b8; margin-top: 3px; font-style: italic;">${item.vnword || item.vnans || ''}</div>
+            </div>
+            <button onclick="toggleSaveGlobal('${item.word.replace(/'/g, "\\'")}')" style="background: ${isSaved ? 'rgba(250, 204, 21, 0.1)' : 'rgba(255, 255, 255, 0.06)'}; border: 1px solid ${isSaved ? 'rgba(250, 204, 21, 0.5)' : 'rgba(255, 255, 255, 0.15)'}; border-radius: 10px; padding: 6px 12px; cursor: pointer; transition: all 0.2s;">
+                ${isSaved ? '💛' : '🤍'}
+            </button>
+        </div>
+        `;
+    }).join('');
+}
+
+function toggleSaveGlobal(wordStr) {
+    if (!mastery[wordStr]) mastery[wordStr] = { s: 0, w: 0, a: true };
+    mastery[wordStr].saved = !mastery[wordStr].saved; // Đảo trạng thái lưu
+    save(); // Lưu vào LocalStorage
+    
+    // Cập nhật lại giao diện tìm kiếm ngay lập tức
+    if (document.getElementById('global-search-input') && document.getElementById('global-search-input').value.trim() !== '') {
+        executeGlobalSearch();
+    }
+    
+    // Cập nhật lại Bảng từ vựng (nếu đang mở) để thấy trái tim đổi màu
+    const vocabModal = document.getElementById('vocab-table-modal');
+    if (vocabModal && !vocabModal.classList.contains('hidden')) {
+        // Kiểm tra xem đang mở bảng từ vựng thông thường hay bảng từ đã lưu
+        const title = document.getElementById('vocab-table-title').innerText;
+        if (title.includes('Danh sách đã lưu')) {
+            openSavedVocabTable(); // Render lại bảng từ đã lưu
+        } else {
+            openVocabTable(); // Render lại bảng từ vựng bài học
+        }
+    }
+    
+    // Cập nhật lại giao diện văn bản phân tích
+    if (document.getElementById('analyze-input') && document.getElementById('analyze-input').value.trim().length > 0) {
+        analyzeText();
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* =========================================
@@ -109172,16 +109342,25 @@ function analyzeText() {
                 badgeText = `Cấp độ ${item.lek}`;
             }
 
-            listHtml += `
-                <div class="match-item">
-                    <div style="flex: 1;">
-                        <b style="color: #fff; font-size: 15px;">${item.word}</b>
-                        ${item.ans && item.ans !== item.word ? `<div style="font-size: 13px; color: #38bdf8; font-weight: bold; margin-top: 2px;">${item.ans}</div>` : ''}
-                        <div style="font-size: 12px; color: #94a3b8; margin-top: 3px; font-style: italic;">${item.vnword || item.vnans || ''}</div>
-                    </div>
-                    <div><span class="${badgeClass}" style="font-size:11px; padding:4px 8px; border-radius:12px; font-weight:600;">${badgeText}</span></div>
-                </div>
-            `;
+           // Bên trong vòng lặp grouped[lvl].forEach(item => { ... }) của hàm analyzeText()
+				if (!mastery[item.word]) mastery[item.word] = { s: 0, w: 0, a: true };
+				const isSaved = mastery[item.word].saved;
+
+				listHtml += `
+					<div class="match-item">
+						<div style="flex: 1;">
+							<b style="color: #fff; font-size: 15px;">${item.word}</b>
+							${item.ans && item.ans !== item.word ? `<div style="font-size: 13px; color: #38bdf8; font-weight: bold; margin-top: 2px;">${item.ans}</div>` : ''}
+							<div style="font-size: 12px; color: #94a3b8; margin-top: 3px; font-style: italic;">${item.vnword || item.vnans || ''}</div>
+						</div>
+						<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+							<span class="${badgeClass}" style="font-size:11px; padding:4px 8px; border-radius:12px; font-weight:600;">${badgeText}</span>
+							<button onclick="toggleSaveGlobal('${item.word.replace(/'/g, "\\'")}')" style="background: ${isSaved ? 'rgba(250, 204, 21, 0.1)' : 'rgba(255, 255, 255, 0.06)'}; border: 1px solid ${isSaved ? 'rgba(250, 204, 21, 0.5)' : 'rgba(255, 255, 255, 0.15)'}; border-radius: 8px; padding: 4px 12px; cursor: pointer; transition: all 0.2s;">
+								${isSaved ? '💛' : '🤍'}
+							</button>
+						</div>
+					</div>
+				`;
         });
     });
     
