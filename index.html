@@ -113742,6 +113742,10 @@ function openSavedVocabTable() {
     function normalizeGerman(text) {
     if (!text) return "";
 
+    // HÀM CHUẨN HÓA DỮ LIỆU ĐẦU VÀO (TỰ ĐỘNG BỎ QUA TẤT CẢ DẤU CÂU, DẤU CẢM, DẤU GẠCH NGANG)
+function normalizeGerman(text) {
+    if (!text) return "";
+
     const map = {
         // Cách (Kasus)
         'nom': 'nominativ', 'nom.': 'nominativ',
@@ -113763,7 +113767,8 @@ function openSavedVocabTable() {
 
     let cleaned = text.toLowerCase()
         .replace(/\b(r\s*\/?\s*e|e\s*\/?\s*r|r\.\s*\/?\s*e\.|e\.\s*\/?\s*r\.)\b/g, "der die")
-        .replace(/[-".,\/()]/g, " ") // <--- Đã thêm "-" và '"' vào đây để bỏ dấu gạch ngang & ngoặc kép
+        // Lọc bỏ toàn bộ dấu câu (! ? - . , / ( ) : ; " ' „ “ « ») và chỉ giữ lại chữ cái, số, ký tự tiếng Đức (ä, ö, ü, ß)
+        .replace(/[^a-z0-9äöüß\s]/gi, ' ')
         .replace(/\s+/g, ' ')
         .trim();
 
