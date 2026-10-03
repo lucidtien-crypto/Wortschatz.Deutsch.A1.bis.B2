@@ -145380,15 +145380,18 @@ function save() {
 }
 
 // 1. Đẩy thẳng dữ liệu lên mây
-async function forceImmediateSave() {
+	async function forceImmediateSave() {
+    const nowStr = new Date().toISOString();
+    localStorage.setItem('b2_last_updated', nowStr);
     localStorage.setItem('b2_pro_v1', JSON.stringify(mastery));
+
     if (userPin && window.db) {
         try {
             updateSyncStatusUI("Đang lưu mây...", true);
             const userDocRef = window.doc(window.db, "user_progress", userPin);
             await window.setDoc(userDocRef, {
                 mastery_json: JSON.stringify(mastery),
-                lastUpdated: new Date().toISOString()
+                lastUpdated: nowStr
             }, { merge: true });
             updateSyncStatusUI("Mây đã đồng bộ");
         } catch (err) {
@@ -145521,6 +145524,20 @@ async function checkUserPinAndSync() {
 
         if (docSnap.exists()) {
             const data = docSnap.data();
+            
+            // So sánh thời gian
+            const cloudTimestamp = data.lastUpdated || "2000-01-01T00:00:00.000Z";
+            const localTimestamp = localStorage.getItem('b2_last_updated') || "2000-01-01T00:00:00.000Z";
+
+            // NẾU LOCAL MỚI HƠN CLOUD -> Đẩy Local lên cứu Cloud
+            if (new Date(localTimestamp) > new Date(cloudTimestamp)) {
+                console.log("Dữ liệu trên máy mới hơn Mây. Đang đẩy lên Mây...");
+                await forceImmediateSave();
+                updateSyncStatusUI("Đã cứu dữ liệu lên Mây");
+                return;
+            }
+
+            // NẾU CLOUD MỚI HƠN HOẶC BẰNG -> Tải từ Cloud về
             let cloudData = null;
             try { cloudData = JSON.parse(data.mastery_json); } catch(e){}
 
@@ -145532,6 +145549,8 @@ async function checkUserPinAndSync() {
                 });
 
                 localStorage.setItem('b2_pro_v1', JSON.stringify(mastery));
+                localStorage.setItem('b2_last_updated', cloudTimestamp); // Cập nhật lại thời gian local khớp mây
+                
                 updateSyncStatusUI("Mây đã đồng bộ");
                 renderList();
                 renderHeat();
