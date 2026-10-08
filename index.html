@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+		<!-- Tối ưu màn hình điện thoại & Khóa tự động thu nhỏ/zoom -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<!-- Bật chế độ chạy như App độc lập (Ấn không bị hiện thanh địa chỉ trình duyệt) -->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+
+
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -632,64 +642,84 @@
         }
 
 
+		/* =========================================================
+		   🛡️ BỘ TỐI ƯU GIAO DIỆN ĐIỆN THOẠI (KẾT HỢP HOÀN HẢO)
+		   ========================================================= */
+		@media (max-width: 768px) {
+			/* 1. TẬN DỤNG TỐI ĐA KHÔNG GIAN VIỀN & CỠ CHỮ CƠ SỞ */
+			body { 
+				padding: 5px 6px !important; 
+				font-size: 16px !important;
+				-webkit-text-size-adjust: 100%;
+			}
+			.container { padding: 0 !important; }
+			.glass-card { padding: 12px 10px !important; margin-bottom: 8px !important; }
+			
+			/* 2. ĐẢO THỨ TỰ BÀI TEST: ĐẨY Ô GÕ CHỮ LÊN TRÊN BÀN PHÍM ẢO */
+			.quiz-layout {
+				display: flex !important;
+				flex-direction: column !important;
+				gap: 0 !important;
+			}
+			.center-stack { order: 1 !important; margin-bottom: 10px; }
+			#left-col { order: 2 !important; margin-bottom: 10px; }
+			.quiz-layout > .glass-card:last-child { order: 3 !important; }
 
-@media (max-width: 768px) {
-            /* Tận dụng tối đa không gian viền 2 bên */
-            body { padding: 5px 6px !important; }
-            .container { padding: 0 !important; }
-            .glass-card { padding: 12px 10px !important; margin-bottom: 8px !important; }
-            
-            /* 1. SẮP XẾP LẠI THỨ TỰ ƯU TIÊN KHI ĐANG HỌC */
-            .quiz-layout {
-                display: flex !important;
-                flex-direction: column !important;
-                gap: 0 !important;
-            }
-            /* Đẩy khu vực Nhập chữ + Nút Check lên cao nhất */
-            .center-stack { order: 1 !important; margin-bottom: 10px; }
-            /* Cột giải thích (Ví dụ, đồng nghĩa) nằm giữa */
-            #left-col { order: 2 !important; margin-bottom: 10px; }
-            /* Heatmap từ sai nằm dưới cùng (vuốt xuống mới xem) */
-            .quiz-layout > .glass-card:last-child { order: 3 !important; }
+			/* 3. Ô NHẬP LIỆU: TO RÕ, KHÔNG BỊ IPHONE TỰ ZOOM */
+			.quiz-vn { font-size: 17.5px !important; margin: 4px 0 8px 0 !important; }
+			input[type="text"], input[type="password"], textarea, select, textarea#ans-input { 
+				padding: 10px 12px !important; 
+				font-size: 16px !important; /* Chuẩn 16px để iOS không tự zoom-in */
+				min-height: 48px !important; 
+				height: auto !important;
+				margin-bottom: 5px !important;
+				border-radius: 10px !important;
+			}
 
-            /* 2. ÉP KHU VỰC GÕ CHỮ VỪA KHÍT VỚI BÀN PHÍM ẢO */
-            .quiz-vn { font-size: 17.5px !important; margin: 4px 0 8px 0 !important; }
-            textarea#ans-input { 
-                padding: 10px 12px !important; 
-                font-size: 16px !important; /* Chuẩn 16px để đt không tự động Zoom-in */
-                min-height: 50px !important; 
-                height: auto !important;
-                margin-bottom: 5px !important;
-            }
-            #check-btn { padding: 12px !important; font-size: 15px !important; margin-top: 4px !important; }
-            
-            /* 3. TINH CHỈNH NÚT BẤM MENU GỌN GÀNG HƠN */
-            .btn-group { gap: 4px !important; }
-            .btn-action { padding: 8px 2px !important; font-size: 11.5px !important; }
-            .level-tabs { gap: 5px !important; }
-            .level-tab { padding: 5px 10px !important; font-size: 11.5px !important; }
-            
-            /* 4. CHỮ GIẢI THÍCH VỪA MẮT, KHÔNG QUÁ BÉ */
-            #fb-left p, #fb-left div, #fb-left span { 
-                font-size: 13.5px !important; 
-                line-height: 1.45 !important; 
-            }
-            
-            /* Thu gọn phần menu chọn bài */
-            .custom-dropdown-selected { font-size: 14px !important; padding: 8px 30px 8px 15px !important; }
-            .btn-sub { padding: 6px 8px !important; font-size: 12.5px !important; }
-        }
+			/* 4. TĂNG KÍCH THƯỚC NÚT BẤM DỄ BẤM BẰNG NGÓN CÁI */
+			button, .btn, .btn-main, [role="button"], #check-btn { 
+				min-height: 46px !important;
+				padding: 10px 16px !important; 
+				font-size: 15px !important; 
+				font-weight: 600 !important;
+				border-radius: 12px !important;
+				touch-action: manipulation;
+			}
 
+			/* 5. TINH CHỈNH NÚT MENU GỌN GÀNG VỪA MÀN HÌNH */
+			.btn-group { gap: 4px !important; }
+			.btn-action { padding: 8px 4px !important; font-size: 12px !important; }
+			.level-tabs { gap: 5px !important; }
+			.level-tab { padding: 6px 10px !important; font-size: 12px !important; }
+			.custom-dropdown-selected { font-size: 14px !important; padding: 8px 30px 8px 15px !important; }
+			.btn-sub { padding: 6px 8px !important; font-size: 12.5px !important; }
+			
+			/* 6. CHỮ GIẢI THÍCH VÀ TỪ VỰNG TO RÕ, ĐỄ ĐỌC */
+			#fb-left p, #fb-left div, #fb-left span { 
+				font-size: 14px !important; 
+				line-height: 1.45 !important; 
+			}
+			.vocab-word, .german-word, .word-title, h1, h2 {
+				font-size: 26px !important;
+				line-height: 1.3 !important;
+				text-align: center !important;
+			}
 
-
-
-
-
-
-
+			/* 7. KHUNG MODAL POPUP KHÔNG BỊ TRÀN MÀN HÌNH */
+			.card, .modal-content {
+				width: 96% !important;
+				max-width: 100% !important;
+				max-height: 85vh !important;
+				overflow-y: auto !important;
+				margin-left: auto !important;
+				margin-right: auto !important;
+				box-sizing: border-box !important;
+			}
+		}
+</style>
 
 
-    </style>
+
 </head>
 <body>
 
@@ -146216,32 +146246,58 @@ function save() {
     }
 }
 
-async function forceImmediateSave() {
-    // Chốt an toàn: Nếu local đang rỗng, tuyệt đối không đè dữ liệu rỗng lên Cloud
-    if (!mastery || Object.keys(mastery).length === 0) {
-        console.warn("Dữ liệu local đang rỗng, tạm dừng auto-save lên Cloud.");
-        return;
-    }
+		async function forceImmediateSave() {
+		// =========================================================================
+		// 🛡️ CHỐT AN TOÀN 1: TỰ ĐỘNG PHÁT HIỆN FILE OFFLINE TRÊN MÁY TÍNH
+		// =========================================================================
+		const isOfflineLocal = window.location.protocol === 'file:' || 
+							   window.location.hostname === 'localhost' || 
+							   window.location.hostname === '127.0.0.1';
 
-    const nowStr = new Date().toISOString();
-    localStorage.setItem('b2_last_updated', nowStr);
-    localStorage.setItem('b2_pro_v1', JSON.stringify(mastery));
+		if (isOfflineLocal) {
+			console.warn("⚠️ Đang mở file offline/test trên máy tính. ĐÃ KHÓA ĐỒNG BỘ MÂY.");
+			
+			// Vẫn lưu tạm vào localStorage máy tính để bạn test giao diện nếu cần
+			localStorage.setItem('b2_last_updated', new Date().toISOString());
+			localStorage.setItem('b2_pro_v1', JSON.stringify(mastery));
+			
+			// Hiển thị trạng thái an toàn trên màn hình
+			updateSyncStatusUI("Chế độ Offline (Đã khóa lưu Mây)");
+			
+			// DỪNG HÀM TẠI ĐÂY -> Tuyệt đối không gửi bất kỳ dữ liệu nào lên Firebase
+			return; 
+		}
 
-    if (userPin && window.db) {
-        try {
-            updateSyncStatusUI("Đang lưu mây...", true);
-            const userDocRef = window.doc(window.db, "user_progress", userPin);
-            await window.setDoc(userDocRef, {
-                mastery_json: JSON.stringify(mastery),
-                lastUpdated: nowStr
-            }, { merge: true });
-            updateSyncStatusUI("Mây đã đồng bộ");
-        } catch (err) {
-            console.error("Lỗi đồng bộ Mây:", err);
-            updateSyncStatusUI("Lỗi mây (Lưu local)");
-        }
-    }
-}
+		// =========================================================================
+		// 🛡️ CHỐT AN TOÀN 2: KHÔNG LƯU NẾU DỮ LIỆU LOCAL RỖNG
+		// =========================================================================
+		if (!mastery || Object.keys(mastery).length === 0) {
+			console.warn("Dữ liệu local đang rỗng, hủy tự động lưu lên Cloud.");
+			return;
+		}
+
+		// =========================================================================
+		// LƯU DỮ LIỆU LÊN MÂY (Chỉ chạy khi bạn đang ở trên Website Online chuẩn)
+		// =========================================================================
+		const nowStr = new Date().toISOString();
+		localStorage.setItem('b2_last_updated', nowStr);
+		localStorage.setItem('b2_pro_v1', JSON.stringify(mastery));
+
+		if (userPin && window.db) {
+			try {
+				updateSyncStatusUI("Đang lưu mây...", true);
+				const userDocRef = window.doc(window.db, "user_progress", userPin);
+				await window.setDoc(userDocRef, {
+					mastery_json: JSON.stringify(mastery),
+					lastUpdated: nowStr
+				}, { merge: true });
+				updateSyncStatusUI("Mây đã đồng bộ");
+			} catch (err) {
+				console.error("Lỗi đồng bộ Mây:", err);
+				updateSyncStatusUI("Lỗi mây (Lưu local)");
+			}
+		}
+	}
 
 // Tự động lưu tức thì khi thoát ra ngoài, ẩn tab, tắt app
 document.addEventListener('visibilitychange', () => {
