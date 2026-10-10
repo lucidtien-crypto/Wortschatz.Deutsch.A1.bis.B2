@@ -147049,7 +147049,7 @@ function openSavedVocabTable() {
         if (idx >= session.length || isTransitioning) return;
         const v = session[idx];
         
-        if (!mastery[v.word]) mastery[v.word] = { s: 0, w: 0, a: true };
+       if (!mastery[v.word]) mastery[v.word] = { s: 0, w: 0, a: true, saved: false, skipped: false };
         mastery[v.word].skipped = true; 
         save(); 
 
@@ -147453,11 +147453,15 @@ function importData() {
     }
 
     function init() {
-        data.forEach(v => { 
-            if (mastery[v.word] === undefined) {
-                mastery[v.word] = { s: 0, w: 0, a: true }; 
-            }
-        });
+    data.forEach(v => { 
+        if (mastery[v.word] === undefined) {
+            mastery[v.word] = { s: 0, w: 0, a: true, saved: false, skipped: false }; 
+        } else {
+            // Đảm bảo từ cũ đã tồn tại nhưng chưa có các thuộc tính mới thì được bổ sung
+            if (mastery[v.word].saved === undefined) mastery[v.word].saved = false;
+            if (mastery[v.word].skipped === undefined) mastery[v.word].skipped = false;
+        }
+    });
 
         const levelsInData = new Set(data.map(v => v.level).filter(Boolean));
         availableLevels = Array.from(levelsInData).sort((a, b) => {
@@ -148074,7 +148078,7 @@ function executeGlobalSearch() {
 }
 
 function toggleSaveGlobal(wordStr) {
-    if (!mastery[wordStr]) mastery[wordStr] = { s: 0, w: 0, a: true };
+    if (!mastery[wordStr]) mastery[wordStr] = { s: 0, w: 0, a: true, saved: false, skipped: false };
     mastery[wordStr].saved = !mastery[wordStr].saved; 
     save(); 
     
@@ -148452,7 +148456,7 @@ function toggleSaveCurrentWord() {
     if (idx >= session.length || isTransitioning) return;
     const v = session[idx];
     
-    if (!mastery[v.word]) mastery[v.word] = { s: 0, w: 0, a: true };
+    if (!mastery[v.word]) mastery[v.word] = { s: 0, w: 0, a: true, saved: false, skipped: false };
     mastery[v.word].saved = !mastery[v.word].saved; 
     
     save(); 
