@@ -906,9 +906,16 @@
                         <!-- Nút Skip -->
                         <span id="btn-skip-word" onclick="skipCurrentWord()" style="display: inline-block; font-size: 12px; font-weight: bold; color: #cbd5e1; background: rgba(255, 255, 255, 0.06); padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.15); transition: all 0.3s; user-select: none; cursor: pointer;">Skip</span>
                         
+						<!-- Nút Luyện nói Sprechen -->
+						<span onclick="startSpeechPractice(currentStep === 1 ? session[idx].word : session[idx].ans)" style="display: inline-block; font-size: 13px; color: #34d399; background: rgba(52,211,153,0.1); padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(52,211,153,0.3); cursor: pointer;" title="Luyện nói Sprechen-Check">🎤 Sprechen</span>
+						
+						
                         <!-- Nút Phao cứu sinh -->
                         <span id="quiz-lifelines-icons" onclick="useOneLifeline()" style="display: inline-block; font-size: 12px; font-weight: bold; color: #60a5fa; background: rgba(96,165,250,0.1); padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(96,165,250,0.3); transition: all 0.3s; user-select: none; cursor: pointer;">🛟x1</span>
-                    </div>
+                    
+					
+					
+					</div>
                 </div>
 
                 <div id="typing-guide-box" class="hidden" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 12px; font-size: 11px; color: #cbd5e1; border-radius: 12px; margin-bottom: 12px; text-align: left; max-height: 200px; overflow-y: auto;">
@@ -146859,7 +146866,7 @@ function forceSyncFromCloud() {
             <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
                 <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 10px; margin-bottom: 12px;">
                     <div style="display: flex; align-items: center; gap: 8px; color: var(--primary); font-size: 18px; font-weight: 800; flex-wrap: wrap;">
-                        ${index + 1}. ${v.word} 
+                        ${index + 1}. ${v.word}${v.ipa ? `<span style="font-size: 13px; color: #38bdf8; font-weight: normal; margin-left: 6px;">${v.ipa}</span>` : ''}
                         <span onclick="event.stopPropagation(); speakGerman('${v.word.replace(/'/g, "\\'")}')" style="cursor:pointer; font-size: 16px;" title="Nghe từ">🔊</span>
                         <button onclick="toggleSaveGlobal('${v.word.replace(/'/g, "\\'")}')" style="background: ${mastery[v.word] && mastery[v.word].saved ? 'rgba(250, 204, 21, 0.1)' : 'rgba(255, 255, 255, 0.06)'}; border: 1px solid ${mastery[v.word] && mastery[v.word].saved ? 'rgba(250, 204, 21, 0.5)' : 'rgba(255, 255, 255, 0.15)'}; border-radius: 8px; padding: 2px 8px; font-size: 12px; cursor: pointer; transition: all 0.2s;">
                             ${mastery[v.word] && mastery[v.word].saved ? '💛' : '🤍'}
@@ -147540,6 +147547,14 @@ function importData() {
     }
 
     function showWord() {
+        // 🛡️ DỪNG NGAY PHIÊN GHI ÂM CŨ KHI CHUYỂN BƯỚC HOẶC ĐỔI TỪ
+        if (activeRecognition) {
+            try {
+                activeRecognition.abort();
+            } catch (e) {}
+            activeRecognition = null;
+        }
+
         if (idx >= session.length) {
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('finish-screen').classList.remove('hidden');
@@ -147550,7 +147565,6 @@ function importData() {
                 document.getElementById('finish-msg').innerText = "Đã hoàn thành lượt ôn tập 5 từ vựng.";
             }
             
-            // THÊM DÒNG NÀY: Ép lưu tức thì lên Mây khi vừa kết thúc phiên học
             forceImmediateSave(); 
             return;
         }
@@ -147589,6 +147603,7 @@ function importData() {
         inputField.value = "";
         inputField.placeholder = currentStep === 1 ? "Gõ từ gốc..." : "Gõ cụm từ đầy đủ...";
         inputField.style.background = "rgba(0,0,0,0.25)";
+        inputField.style.borderColor = "var(--border)"; // Đảm bảo trả lại viền mặc định
         
         updateLifelineUI();
         updateDots();
@@ -148514,6 +148529,99 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }, 300);
 });
+
+
+
+
+
+
+// Biến toàn cục quản lý phiên nhận diện
+let activeRecognition = null;
+
+function startSpeechPractice() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        alert("Trình duyệt không hỗ trợ nhận diện giọng nói. Hãy dùng Google Chrome nhé!");
+        return;
+    }
+
+    const inputField = document.getElementById('ans-input');
+    if (!inputField) return;
+
+    // Màu xanh ngọc dịu nhẹ đồng bộ giao diện
+    const activeColor = "#10b981"; 
+    const defaultColor = "var(--border)";
+
+    // Nếu đang bật mà bấm lại nút Sprechen -> Tắt ngay lập tức
+    if (activeRecognition) {
+        try {
+            activeRecognition.abort();
+        } catch (e) {}
+        activeRecognition = null;
+        inputField.placeholder = "Nhập câu trả lời...";
+        inputField.style.borderColor = defaultColor;
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+    activeRecognition = recognition;
+
+    recognition.lang = 'de-DE';
+    recognition.interimResults = true;
+    recognition.continuous = true;
+    recognition.maxAlternatives = 1;
+
+    // KHỞI TẠO LẠI HOÀN TOÀN CHO MỖI PHIÊN MỚI
+    let finalPhrases = []; 
+    inputField.value = ""; // Xóa trắng ô input ngay khi bắt đầu
+    inputField.placeholder = "🎙️ Đang nghe... (Bấm Sprechen để dừng)";
+    inputField.style.borderColor = activeColor; 
+
+    recognition.onresult = (event) => {
+        let interimText = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            const transcript = event.results[i][0].transcript.trim();
+            
+            if (event.results[i].isFinal) {
+                if (finalPhrases.length === 0 || finalPhrases[finalPhrases.length - 1] !== transcript) {
+                    finalPhrases.push(transcript);
+                }
+            } else {
+                interimText = transcript;
+            }
+        }
+
+        const fullSpokenText = [...finalPhrases, interimText].filter(Boolean).join(' ');
+        inputField.value = fullSpokenText;
+    };
+
+    recognition.onerror = (event) => {
+        console.error("Speech error:", event.error);
+        activeRecognition = null;
+        inputField.placeholder = "Nhập câu trả lời...";
+        inputField.style.borderColor = defaultColor;
+    };
+
+    recognition.onend = () => {
+        activeRecognition = null;
+        inputField.placeholder = "Nhập câu trả lời...";
+        inputField.style.borderColor = defaultColor;
+    };
+
+    recognition.start();
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
