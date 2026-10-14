@@ -148558,7 +148558,7 @@ function startSpeechPractice() {
             activeRecognition.abort();
         } catch (e) {}
         activeRecognition = null;
-        inputField.placeholder = "Nhập câu trả lời...";
+        inputField.placeholder = "Gõ từ gốc / cụm từ...";
         inputField.style.borderColor = defaultColor;
         return;
     }
@@ -148568,50 +148568,51 @@ function startSpeechPractice() {
 
     recognition.lang = 'de-DE';
     recognition.interimResults = true;
-    recognition.continuous = true;
+    
+    // Đã thay đổi: Trên điện thoại nên để continuous = false đối với các cụm từ ngắn
+    // để tránh bị lặp vòng lặp API của Google, nhưng nếu bạn muốn đọc câu dài thì giữ true.
+    // Ở đây giữ true và sửa logic đọc mảng để chống lặp chữ.
+    recognition.continuous = true; 
     recognition.maxAlternatives = 1;
 
-    // KHỞI TẠO LẠI HOÀN TOÀN CHO MỖI PHIÊN MỚI
-    let finalPhrases = []; 
     inputField.value = ""; // Xóa trắng ô input ngay khi bắt đầu
     inputField.placeholder = "🎙️ Đang nghe... (Bấm Sprechen để dừng)";
     inputField.style.borderColor = activeColor; 
 
+    // CHỈNH SỬA CHÍNH NẰM Ở ĐÂY
     recognition.onresult = (event) => {
-        let interimText = '';
+        let finalTranscript = '';
+        let interimTranscript = '';
 
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-            const transcript = event.results[i][0].transcript.trim();
-            
+        // Thay vì push vào mảng, ta duyệt trực tiếp từ i = 0 để lấy câu hoàn chỉnh nhất
+        for (let i = 0; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
-                if (finalPhrases.length === 0 || finalPhrases[finalPhrases.length - 1] !== transcript) {
-                    finalPhrases.push(transcript);
-                }
+                finalTranscript += event.results[i][0].transcript + ' ';
             } else {
-                interimText = transcript;
+                interimTranscript += event.results[i][0].transcript;
             }
         }
 
-        const fullSpokenText = [...finalPhrases, interimText].filter(Boolean).join(' ');
+        // Gộp chuỗi hoàn chỉnh và chuỗi tạm thời, loại bỏ khoảng trắng thừa
+        const fullSpokenText = (finalTranscript + interimTranscript).replace(/\s+/g, ' ').trim();
         inputField.value = fullSpokenText;
     };
 
     recognition.onerror = (event) => {
         console.error("Speech error:", event.error);
         activeRecognition = null;
-        inputField.placeholder = "Nhập câu trả lời...";
+        inputField.placeholder = "Gõ từ gốc / cụm từ...";
         inputField.style.borderColor = defaultColor;
     };
 
     recognition.onend = () => {
         activeRecognition = null;
-        inputField.placeholder = "Nhập câu trả lời...";
+        inputField.placeholder = "Gõ từ gốc / cụm từ...";
         inputField.style.borderColor = defaultColor;
     };
 
     recognition.start();
 }
-
 
 
 
