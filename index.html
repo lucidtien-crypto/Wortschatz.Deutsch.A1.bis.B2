@@ -148588,6 +148588,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Biến toàn cục quản lý phiên nhận diện
 let activeRecognition = null;
+let silenceTimer = null; // Thêm biến đếm ngược thời gian im lặng
 
 function startSpeechPractice(targetWord = "") {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -148606,6 +148607,7 @@ function startSpeechPractice(targetWord = "") {
     if (activeRecognition) {
         try { activeRecognition.abort(); } catch (e) {}
         activeRecognition = null;
+        clearTimeout(silenceTimer); // Xóa bộ đếm
         inputField.placeholder = "Gõ từ gốc / cụm từ...";
         inputField.style.borderColor = defaultColor;
         return;
@@ -148614,44 +148616,56 @@ function startSpeechPractice(targetWord = "") {
     const recognition = new SpeechRecognition();
     activeRecognition = recognition;
 
+    // 1. ƯU TIÊN TIẾNG ĐỨC: Chuẩn xác 100%
     recognition.lang = 'de-DE';
     recognition.interimResults = true;
     
-    // ĐIỂM QUYẾT ĐỊNH: Đặt false để diệt sạch lỗi lặp chữ trên Android
-    recognition.continuous = false; 
+    // 2. CHO PHÉP NGẮT QUÃNG: Đổi thành true để không bị tắt khi lấy hơi ở dấu phẩy
+    recognition.continuous = true; 
     recognition.maxAlternatives = 1;
 
     inputField.value = ""; 
-    inputField.placeholder = "🎙️ Đang nghe... (Cứ nói từ từ, máy đang thu)";
+    inputField.placeholder = "🎙️ Đang nghe... (Thoải mái ngắt nghỉ, im lặng 2s máy sẽ tự chốt)";
     inputField.style.borderColor = activeColor; 
 
-    let currentSessionFinal = '';
-
     recognition.onresult = (event) => {
+        // QUAN TRỌNG: Quét lại toàn bộ results từ 0 để diệt lỗi lặp từ trên Android
+        let finalTranscript = '';
         let interimTranscript = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
+        
+        for (let i = 0; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
-                currentSessionFinal += event.results[i][0].transcript + ' ';
+                finalTranscript += event.results[i][0].transcript + ' ';
             } else {
                 interimTranscript += event.results[i][0].transcript;
             }
         }
-        const fullSpokenText = (currentSessionFinal + interimTranscript).replace(/\s+/g, ' ').trim();
+        
+        const fullSpokenText = (finalTranscript + interimTranscript).replace(/\s+/g, ' ').trim();
         inputField.value = fullSpokenText;
+
+        // THUẬT TOÁN IM LẶNG: Chờ 2 giây (2000ms). Nếu bạn nói tiếp, đồng hồ bị reset.
+        // Nếu ngưng nói quá 2 giây, máy tự đóng mic và nộp bài.
+        clearTimeout(silenceTimer);
+        silenceTimer = setTimeout(() => {
+            recognition.stop(); 
+        }, 2000); // Bạn có thể sửa 2000 thành 3000 (3 giây) nếu cần nghỉ lâu hơn
     };
 
     recognition.onerror = (event) => {
         activeRecognition = null;
+        clearTimeout(silenceTimer);
         inputField.placeholder = "Gõ từ gốc / cụm từ...";
         inputField.style.borderColor = defaultColor;
     };
 
     recognition.onend = () => {
         activeRecognition = null;
+        clearTimeout(silenceTimer);
         inputField.placeholder = "Gõ từ gốc / cụm từ...";
         inputField.style.borderColor = defaultColor;
         
-        // Tự động kiểm tra đáp án ngay sau khi bạn dứt câu (rảnh tay hoàn toàn)
+        // Tự động kiểm tra đáp án ngay sau khi mic tắt
         if (inputField.value.trim() !== "") {
             setTimeout(() => processCheck(), 200);
         }
@@ -148659,9 +148673,6 @@ function startSpeechPractice(targetWord = "") {
 
     recognition.start();
 }
-
-
-
 
 
 
