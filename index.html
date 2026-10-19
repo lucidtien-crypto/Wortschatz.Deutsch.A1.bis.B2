@@ -146158,7 +146158,10 @@ function closeSRSModal() {
     let userPin = localStorage.getItem('b2_user_pin') || "";
 
     let session = [];
-    let idx = 0;
+		let idx = 0;
+		let pendingKasusWarning = false; // Biến theo dõi việc bỏ qua Akk/Dat
+	let isVoiceAnswer = false;       // Theo dõi xem bạn có đang dùng giọng nói không
+	let isManualVoiceRestart = false;// Đánh dấu khi bạn chủ động bấm nút để nói lại
     let penaltyMode = false;
     let penaltyCount = 0;
     let currentStep = 1; 
@@ -147408,6 +147411,8 @@ function importData() {
                     <b style="color: #fff; font-size: 18px; display: inline-block; margin-top: 5px;">${target}</b>
                 </div>`;
             updateDots();
+			pendingKasusWarning = false;
+			isVoiceAnswer = false;
             setTimeout(() => inputField.focus(), 50);
         }
     }
@@ -147703,7 +147708,55 @@ function importData() {
         const v = session[idx];
         
         const target = currentStep === 1 ? v.word : v.ans;
-        const correct = normalizeGerman(input.value) === normalizeGerman(target);
+        let correct = normalizeGerman(input.value) === normalizeGerman(target);
+
+        // --- BẮT ĐẦU LOGIC BỎ QUA AKK/DAT/PRONOMEN ---
+        const removeKasusAndPronouns = (str) => normalizeGerman(str).replace(/\b(nominativ|akkusativ|dativ|genitiv|jemanden|jemandem|jemand|etwas)\b/gi, '').replace(/\s+/g, ' ').trim();
+        const inputClean = removeKasusAndPronouns(input.value);
+        const targetClean = removeKasusAndPronouns(target);
+
+        if (!correct && !penaltyMode && inputClean === targetClean && targetClean !== "") {
+            if (!pendingKasusWarning) {
+                pendingKasusWarning = true; // Đánh dấu đã hiện cảnh báo
+                input.style.background = "rgba(251, 191, 36, 0.3)"; 
+                
+                const checkBtn = document.getElementById('check-btn');
+                checkBtn.innerHTML = "Cho qua luôn (Enter)";
+                checkBtn.style.background = "var(--warning)";
+                checkBtn.style.color = "#000";
+                
+                let missingComponents = [];
+                const normInput = normalizeGerman(input.value);
+                const normTarget = normalizeGerman(target);
+                
+                if (normTarget.includes("etwas") && !normInput.includes("etwas")) missingComponents.push("etw");
+                if (normTarget.includes("jemanden") && !normInput.includes("jemanden")) missingComponents.push("jmdn");
+                if (normTarget.includes("jemandem") && !normInput.includes("jemandem")) missingComponents.push("jmdm");
+                if (normTarget.includes("jemand") && !normInput.includes("jemand") && !normInput.includes("jemanden") && !normInput.includes("jemandem")) missingComponents.push("jmd");
+                if (normTarget.includes("akkusativ") && !normInput.includes("akkusativ")) missingComponents.push("Akk");
+                if (normTarget.includes("dativ") && !normInput.includes("dativ")) missingComponents.push("Dat");
+                if (normTarget.includes("nominativ") && !normInput.includes("nominativ")) missingComponents.push("Nom");
+                if (normTarget.includes("genitiv") && !normInput.includes("genitiv")) missingComponents.push("Gen");
+                
+                let missingHintText = missingComponents.length > 0 ? `(Thiếu: ${missingComponents.join(", ")})` : "";
+
+                document.getElementById('fb').innerHTML = `
+                    <div style="color: #fbbf24; font-weight: bold; margin-top: 10px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px;">
+                        ⚠️ Fast richtig! Bạn gõ thiếu Kasus/Pronomen ${missingHintText}.<br>
+                        <span style="font-size: 14px; color: #fff; margin-top: 5px; display: inline-block;">Bấm Enter lần nữa để bỏ qua và đi tiếp!</span><br>
+                        <span style="font-size: 12px; opacity: 0.8;">Đầy đủ: ${target}</span>
+                    </div>`;
+                return; // Dừng lại chờ Enter
+            } else {
+                // NẾU ĐÃ CẢNH BÁO MÀ VẪN BẤM ENTER -> CHẤP NHẬN ĐÚNG LUÔN
+                correct = true;
+                pendingKasusWarning = false;
+            }
+        } else {
+            // Reset nếu người dùng gõ nội dung khác
+            pendingKasusWarning = false;
+        }
+        // --- KẾT THÚC LOGIC BỎ QUA ---
 
         if (isOfferingLifeline) {
             isOfferingLifeline = false;
@@ -147718,10 +147771,8 @@ function importData() {
             mastery[v.word].s = 0;
             mastery[v.word].w = (mastery[v.word].w || 0) + 1;
             
-            // --- SRS RESET KHI SAI ---
             mastery[v.word].intervalIndex = 0;
             delete mastery[v.word].nextReview;
-            // -------------------------
 
             save(); renderHeat();
             penaltyMode = true; 
@@ -147734,43 +147785,17 @@ function importData() {
                     input.value = ""; 
                     input.style.background = "rgba(248, 113, 113, 0.2)"; 
                     updateDots();
+                    // Tự động bật Mic nếu trước đó dùng giọng nói
+                    if (isVoiceAnswer) startSpeechPractice(target);
                 }, 300);
             } else {
                 penaltyCount = 0;
                 input.style.background = "rgba(248, 113, 113, 0.2)";
+                if (isVoiceAnswer) startSpeechPractice(target);
             }
             
             updateDots(); showDetailFeedback(v, false);
             return; 
-        }
-
-        if (!correct && !penaltyMode) {
-            const removeKasusAndPronouns = (str) => normalizeGerman(str).replace(/\b(nominativ|akkusativ|dativ|genitiv|jemanden|jemandem|jemand|etwas)\b/gi, '').replace(/\s+/g, ' ').trim();
-            if (removeKasusAndPronouns(input.value) === removeKasusAndPronouns(target) && removeKasusAndPronouns(target) !== "") {
-                input.style.background = "rgba(251, 191, 36, 0.3)"; 
-                
-                let missingComponents = [];
-                const normInput = normalizeGerman(input.value);
-                const normTarget = normalizeGerman(target);
-                
-                if (normTarget.includes("etwas") && !normInput.includes("etwas")) missingComponents.push("etw/etwas");
-                if (normTarget.includes("jemanden") && !normInput.includes("jemanden")) missingComponents.push("jmdn");
-                if (normTarget.includes("jemandem") && !normInput.includes("jemandem")) missingComponents.push("jmdm");
-                if (normTarget.includes("jemand") && !normInput.includes("jemand") && !normInput.includes("jemanden") && !normInput.includes("jemandem")) missingComponents.push("jmd");
-                if (normTarget.includes("akkusativ") && !normInput.includes("akkusativ")) missingComponents.push("Akk");
-                if (normTarget.includes("dativ") && !normInput.includes("dativ")) missingComponents.push("Dat");
-                if (normTarget.includes("nominativ") && !normInput.includes("nominativ")) missingComponents.push("Nom");
-                if (normTarget.includes("genitiv") && !normInput.includes("genitiv")) missingComponents.push("Gen");
-                
-                let missingHintText = missingComponents.length > 0 ? ` (Fehlt: ${missingComponents.join(", ")})` : "";
-
-                document.getElementById('fb').innerHTML = `
-                    <div style="color: #fbbf24; font-weight: bold; margin-top: 10px;">
-                        ⚠️ Fast richtig! Dir fehlt nur der Kasus (Nom, Akk, Dat, Gen...) oder ein Pronomen (jmd, etw...)${missingHintText}.<br>
-                        <span style="font-size: 12px; opacity: 0.8;">Tipp: ${target}</span>
-                    </div>`;
-                return; 
-            }
         }
 
         if (!correct && currentStep === 1 && (v.type||"").toLowerCase().includes("nomen") && !penaltyMode) {
@@ -147780,7 +147805,7 @@ function importData() {
                     input.style.background = "rgba(251, 191, 36, 0.3)"; 
                     document.getElementById('fb').innerHTML = `
                         <div style="color: #fbbf24; font-weight: bold; margin-top: 10px;">
-                            ⚠️ Plural fehlt! Bitte Komma und Pluralendung hinzufügen.<br><span style="font-size: 12px; opacity: 0.8;">Tipp: ${target}</span>
+                            ⚠️ Plural fehlt! Vui lòng gõ kèm đuôi số nhiều.<br><span style="font-size: 12px; opacity: 0.8;">Mẫu: ${target}</span>
                         </div>`;
                     return; 
                 }
@@ -147802,6 +147827,8 @@ function importData() {
                     input.style.background = "var(--success)";
                     setTimeout(() => {
                         input.value = ""; input.style.background = "rgba(248, 113, 113, 0.2)"; updateDots();
+                        // TỰ ĐỘNG BẬT LẠI MIC CHO LẦN NÓI THỨ 2, 3 TRONG LÚC PHẠT
+                        if (isVoiceAnswer) startSpeechPractice(target);
                     }, 300);
                 }
             } else {
@@ -147822,12 +147849,9 @@ function importData() {
                         
                         if (mastery[v.word].s >= getMaxStreak(v)) {
                             justMastered = true;
-                            
-                            // --- SRS LOGIC KHI ĐÚNG TỪ (Đạt lửa) ---
                             const now = new Date().getTime();
                             let currentIdx = mastery[v.word].intervalIndex || 0;
                             
-                            // Nếu từ chưa có ngày hết hạn HOẶC đã quá ngày hẹn (làm đúng bài test) -> Nâng mốc
                             if (!mastery[v.word].nextReview || now >= mastery[v.word].nextReview) {
                                 if (mastery[v.word].nextReview) {
                                     currentIdx = Math.min(currentIdx + 1, SRS_INTERVALS.length - 1);
@@ -147835,7 +147859,6 @@ function importData() {
                                 mastery[v.word].intervalIndex = currentIdx;
                                 mastery[v.word].nextReview = now + (SRS_INTERVALS[currentIdx] * 24 * 60 * 60 * 1000);
                             }
-                            // ----------------------------------------
                         }
                         
                         save(); renderHeat();
@@ -147884,16 +147907,18 @@ function importData() {
                     mastery[v.word].s = 0;
                     mastery[v.word].w = (mastery[v.word].w || 0) + 1;
                     
-                    // --- SRS RESET KHI SAI ---
                     mastery[v.word].intervalIndex = 0;
                     delete mastery[v.word].nextReview;
-                    // -------------------------
 
                     save(); renderHeat();
                     penaltyMode = true; penaltyCount = 0; 
                 } else { penaltyCount = 0; }
+                
                 input.style.background = "rgba(248, 113, 113, 0.2)";
                 updateDots(); showDetailFeedback(v, false);
+                
+                // TỰ ĐỘNG BẬT LẠI MIC KHI NÓI SAI (Chuyển sang chế độ phạt)
+                if (isVoiceAnswer) startSpeechPractice(target);
             }
         }
     }
@@ -148584,11 +148609,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 
-
-
 // Biến toàn cục quản lý phiên nhận diện
 let activeRecognition = null;
-let silenceTimer = null; // Thêm biến đếm ngược thời gian im lặng
+let silenceTimer = null;
 
 function startSpeechPractice(targetWord = "") {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -148603,53 +148626,52 @@ function startSpeechPractice(targetWord = "") {
     const activeColor = "#10b981"; 
     const defaultColor = "var(--border)";
 
-    // Tắt ghi âm nếu đang chạy
+    // NẾU ĐANG CHẠY MÀ BẤM LẠI -> XÓA SẠCH VÀ MỞ LẠI TỪ ĐẦU (Yêu cầu của bạn)
     if (activeRecognition) {
+        isManualVoiceRestart = true; // Đánh dấu là cố tình tắt
         try { activeRecognition.abort(); } catch (e) {}
         activeRecognition = null;
-        clearTimeout(silenceTimer); // Xóa bộ đếm
-        inputField.placeholder = "Gõ từ gốc / cụm từ...";
-        inputField.style.borderColor = defaultColor;
+        clearTimeout(silenceTimer);
+        
+        inputField.value = ""; // Xóa ngay lập tức
+        inputField.placeholder = "🔄 Đang khởi động lại Mic...";
+        
+        // Mở lại mic sau 150ms
+        setTimeout(() => {
+            isManualVoiceRestart = false;
+            startSpeechPractice(targetWord);
+        }, 150);
         return;
     }
 
     const recognition = new SpeechRecognition();
     activeRecognition = recognition;
 
-    // 1. ƯU TIÊN TIẾNG ĐỨC: Chuẩn xác 100%
     recognition.lang = 'de-DE';
     recognition.interimResults = true;
-    
-    // 2. CHO PHÉP NGẮT QUÃNG: Đổi thành true để không bị tắt khi lấy hơi ở dấu phẩy
     recognition.continuous = true; 
     recognition.maxAlternatives = 1;
 
     inputField.value = ""; 
-    inputField.placeholder = "🎙️ Đang nghe... (Thoải mái ngắt nghỉ, im lặng 2s máy sẽ tự chốt)";
+    inputField.placeholder = "🎙️ Đang nghe... (Thấy sai? Bấm lại Mic để xóa nói lại)";
     inputField.style.borderColor = activeColor; 
+    isVoiceAnswer = true; // Đánh dấu đang dùng giọng nói
 
     recognition.onresult = (event) => {
-        // QUAN TRỌNG: Quét lại toàn bộ results từ 0 để diệt lỗi lặp từ trên Android
-        let finalTranscript = '';
-        let interimTranscript = '';
-        
-        for (let i = 0; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-                finalTranscript += event.results[i][0].transcript + ' ';
-            } else {
-                interimTranscript += event.results[i][0].transcript;
-            }
-        }
-        
-        const fullSpokenText = (finalTranscript + interimTranscript).replace(/\s+/g, ' ').trim();
+        // THUẬT TOÁN CHỐNG LẶP CHỮ ANDROID: Quét lấy chuỗi chuẩn nhất
+        let fullSpokenText = Array.from(event.results)
+            .map(res => res[0].transcript)
+            .join('')
+            .replace(/\s+/g, ' ')
+            .trim();
+            
         inputField.value = fullSpokenText;
 
-        // THUẬT TOÁN IM LẶNG: Chờ 2 giây (2000ms). Nếu bạn nói tiếp, đồng hồ bị reset.
-        // Nếu ngưng nói quá 2 giây, máy tự đóng mic và nộp bài.
+        // Đếm ngược 2 giây im lặng
         clearTimeout(silenceTimer);
         silenceTimer = setTimeout(() => {
             recognition.stop(); 
-        }, 2000); // Bạn có thể sửa 2000 thành 3000 (3 giây) nếu cần nghỉ lâu hơn
+        }, 1500); 
     };
 
     recognition.onerror = (event) => {
@@ -148662,18 +148684,16 @@ function startSpeechPractice(targetWord = "") {
     recognition.onend = () => {
         activeRecognition = null;
         clearTimeout(silenceTimer);
-        inputField.placeholder = "Gõ từ gốc / cụm từ...";
         inputField.style.borderColor = defaultColor;
         
-        // Tự động kiểm tra đáp án ngay sau khi mic tắt
-        if (inputField.value.trim() !== "") {
+        // CHỈ tự động duyệt nếu có chữ VÀ không phải do bạn cố tình bấm nút Reset
+        if (!isManualVoiceRestart && inputField.value.trim() !== "") {
             setTimeout(() => processCheck(), 200);
         }
     };
 
     recognition.start();
 }
-
 
 
 
