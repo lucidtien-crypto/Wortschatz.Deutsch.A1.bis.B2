@@ -87,7 +87,7 @@
             box-sizing: border-box; 
         }
 
-        #menu-screen, #finish-screen { max-width: 420px; margin: 0 auto; }
+        #menu-screen, #finish-screen { max-width: 800px; margin: 0 auto; }
 
         .quiz-layout {
             display: grid;
@@ -148,52 +148,50 @@
             transition: min-height 0.3s ease;
         }
 
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border);
-        }
+				/* Thiết kế lại Top Bar chuẩn 1 hàng ngang */
+		.top-bar {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 12px;
+			margin-bottom: 20px;
+			padding-bottom: 12px;
+			border-bottom: 1px solid var(--border);
+		}
 
-        .top-bar-actions {
-            display: grid;
-            grid-template-columns: auto auto auto;
-            gap: 8px;
-            align-items: center;
-        }
+		/* Thanh chứa các nút bên trái - vuốt ngang trên điện thoại, nằm 1 hàng trên PC */
+		.top-bar-actions {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			overflow-x: auto; 
+			scrollbar-width: none; /* Ẩn thanh cuộn Firefox */
+			-ms-overflow-style: none; /* Ẩn thanh cuộn IE */
+			white-space: nowrap; /* Ép không rớt dòng */
+		}
+		.top-bar-actions::-webkit-scrollbar { display: none; } /* Ẩn thanh cuộn Chrome/Safari */
 
-        @media (max-width: 600px) {
-            .top-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .top-bar-actions {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .btn-guide-trigger {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 6px 12px;
-            cursor: pointer;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-            font-weight: 700;
-            color: #cbd5e1;
-        }
-        .btn-guide-trigger:hover {
-            background: rgba(234, 88, 12, 0.2);
-            border-color: var(--warning-selected);
-            color: #fff;
-        }
+		/* Nút bấm Top Bar mới: Sang trọng, gọn gàng dạng viên nang (Pill) */
+		.btn-top-pill {
+			background: rgba(255, 255, 255, 0.05);
+			border: 1px solid var(--border);
+			border-radius: 20px;
+			padding: 8px 14px;
+			cursor: pointer;
+			font-size: 13px;
+			font-weight: 700;
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			transition: all 0.2s ease;
+			color: #cbd5e1;
+			user-select: none;
+		}
+		.btn-top-pill:hover {
+			background: rgba(255, 255, 255, 0.1);
+			color: #fff;
+			transform: translateY(-2px);
+		}
 
         .custom-dropdown-container {
             position: relative;
@@ -730,20 +728,34 @@
     <div id="menu-screen">
         <div class="glass-card">
             
-            <div class="top-bar">
-                <div class="top-bar-actions">
-                    <div class="btn-guide-trigger" onclick="openGuide(true)">
-                        <span>💡</span>
-                        <div>
-                            <span style="font-size: 10px; color: #fde047; font-weight: 800;">HƯỚNG DẪN</span><br>
-                            <span style="font-size: 11px; color: #fde047; font-weight: 800;">Anweisen</span>
-                        </div>
-                    </div>
-                    <div id="music-btn" class="btn-guide-trigger" onclick="toggleMusic()">🎵 Melodie Bachs</div>
-                    <div id="cloud-sync-status" style="font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 10px; background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); text-align: center;">☁️ Mây kết nối</div>
-                </div>
-                <span id="lek-stats" style="font-size: 13px; font-weight: 700; color: var(--success); background: rgba(52, 211, 153, 0.1); padding: 6px 12px; border-radius: 12px; text-align: center;">0/0 🔥</span>
-            </div>
+					<div class="top-bar">
+			<div class="top-bar-actions">
+				<!-- Nút Hướng Dẫn -->
+				<div class="btn-top-pill" onclick="openGuide(true)" style="color: #fde047; border-color: rgba(253, 224, 71, 0.3);">
+					💡 Hinweise
+				</div>
+				
+				<!-- Nút Âm nhạc -->
+				<div id="music-btn" class="btn-top-pill" onclick="toggleMusic()" style="color: #c084fc; border-color: rgba(192, 132, 252, 0.3);">
+					🎵 Melodie
+				</div>
+
+				<!-- Nút Tải Offline -->
+				<div id="offline-btn" class="btn-top-pill" onclick="downloadOfflineApp()" style="color: #60a5fa; border-color: rgba(96, 165, 250, 0.4);">
+					📥 Offline-Download
+				</div>
+				
+				<!-- Trạng thái Mây -->
+				<div id="cloud-sync-status" class="btn-top-pill" style="color: #34d399; border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.1);">
+					☁️ Cloud Connect
+				</div>
+			</div>
+
+			<!-- Chỉ số Lửa (Streak) bên phải -->
+			<div id="lek-stats" class="btn-top-pill" style="color: #f87171; border-color: rgba(248, 113, 113, 0.4); background: rgba(248, 113, 113, 0.1); cursor: default;">
+				0/0 🔥
+			</div>
+		</div>
 
             <h2>Vokabelübung</h2>
             
@@ -780,7 +792,7 @@
                     <span style="font-size: 12.5px; font-weight: bold;">📖 Danh sách từ vựng - Vokabelliste</span>
                 </button>
                 <button class="btn-sub flex-center-col" onclick="openSavedVocabTable()" style="flex: 1; color: #facc15; border-color: rgba(250, 204, 21, 0.4); background: rgba(250, 204, 21, 0.05); padding: 12px;">
-                    <span style="font-size: 12.5px; font-weight: bold;">💛 List Đã lưu</span>
+                    <span style="font-size: 12.5px; font-weight: bold;">Lieblingswörter 💛</span>
                 </button>
             </div>
 
@@ -795,7 +807,7 @@
                 </button>
                 
                 <button class="btn-main flex-center-col" style="padding: 12px; background: linear-gradient(135deg, #f59e0b, #d97706);" onclick="startSession('saved')">
-                    <span style="font-size: 14.5px;">Ôn từ đã lưu</span>
+                    <span style="font-size: 14.5px;">Lieblingswörter üben 💛</span>
                     <span style="font-size: 11.5px; font-weight: normal; opacity: 0.8; margin-top: 3px;">Favoriten</span>
                 </button>
                 
@@ -812,22 +824,22 @@
 
             <!-- KHỐI 3: NÚT VIẾT VÀ PHÂN TÍCH -->
             <button class="btn-main flex-center-col" style="background: linear-gradient(135deg, #db2777, #9333ea); margin-top: 8px; padding: 12px;" onclick="openAnalyzer()">
-                <span style="font-size: 15px;">✍️ Viết & Phân tích (Schreiben-Check)</span>
+                <span style="font-size: 15px;">✍️ Schreiben-Check</span>
             </button>
             
             <!-- KHỐI 4: SAO LƯU, PHỤC HỒI & ĐỒNG BỘ MÂY -->
             <div style="display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap;">
                 <button class="btn-sub flex-center-col" style="color: #34d399; border-color: #34d399; font-weight: bold; padding: 8px;" onclick="exportData()">
-                    <span style="font-size: 12px;">💾 Sao lưu (Backup)</span>
+                    <span style="font-size: 12px;">💾 Backup</span>
                 </button>
                 <button class="btn-sub flex-center-col" style="color: #60a5fa; border-color: #60a5fa; font-weight: bold; padding: 8px;" onclick="importData()">
-                    <span style="font-size: 12px;">📂 Phục hồi (Restore)</span>
+                    <span style="font-size: 12px;">📂 Restore</span>
                 </button>
                 <button class="btn-sub flex-center-col" style="color: #cbd5e1; border-color: rgba(255,255,255,0.2); padding: 8px;" onclick="changeUserPin()">
-                    <span style="font-size: 12px;">🔑 Đổi PIN Mây</span>
+                    <span style="font-size: 12px;">🔑 Cloud-PIN ändern</span>
                 </button>
                 <button class="btn-sub flex-center-col" style="color: #a7f3d0; border-color: #a7f3d0; font-weight: bold; padding: 8px;" onclick="forceSyncFromCloud()">
-                    <span style="font-size: 12px;">🔄 Tải từ Mây</span>
+                    <span style="font-size: 12px;">🔄 Von der Cloud herunterladen</span>
                 </button>
             </div>
         </div>
@@ -860,7 +872,7 @@
             </div>
             
             <div style="text-align: center; margin-bottom: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; border: 1px solid var(--border);">
-                <span style="font-size: 14px; color: #94a3b8; font-weight: 600;">Tổng số từ bài viết: </span>
+                <span style="font-size: 14px; color: #94a3b8; font-weight: 600;">Gesamtwortzahl des Artikels: </span>
                 <b id="stat-words" style="font-size: 24px; color: var(--success); margin-left: 5px;">0</b>
             </div>
 
@@ -875,9 +887,9 @@
             <textarea id="analyze-input" placeholder="Viết đoạn văn (Schreiben) tiếng Đức của bạn vào đây..." oninput="debounceAnalyze()"></textarea>
             
             <div id="analyzer-output-container" class="hidden">
-                <h3 style="color: #fff; margin: 25px 0 10px 0; font-size: 18px;">🔍 Phát hiện từ vựng:</h3>
+                <h3 style="color: #fff; margin: 25px 0 10px 0; font-size: 18px;">🔍 Vokabeln entdecken:</h3>
                 <div id="analyze-result-text"></div>
-                <h4 style="color: #94a3b8; margin: 20px 0 10px 0;">📚 Chi tiết phân loại theo kho dữ liệu:</h4>
+                <h4 style="color: #94a3b8; margin: 20px 0 10px 0;">📚 Details zur Klassifizierung des Wortschatzes nach Datenbanken:</h4>
                 <div id="analyze-match-list"></div>
             </div>
         </div>
@@ -893,7 +905,7 @@
             <div class="glass-card" style="margin-bottom: 0;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; min-height: 36px;">
                     <div style="flex: 1; text-align: left;">
-                        <button class="btn-guide-sm" onclick="toggleTypingGuide()">⌨️ Cách gõ </button>
+                        <button class="btn-guide-sm" onclick="toggleTypingGuide()">⌨️ Eingabemethode</button>
                     </div>
                     
                     <div id="dots" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px;">
@@ -146219,6 +146231,45 @@ function closeSRSModal() {
             btn.style.borderColor = '#ea580c';
         }
     }
+	
+	
+	
+	function downloadOfflineApp() {
+    // Nếu trang đang được cài làm App (PWA) trên điện thoại
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        showCustomAlert("Bạn đang dùng App trên điện thoại rồi. Mọi thứ đã tự động hoạt động offline và sẽ đồng bộ dữ liệu khi có mạng!", "Đã cài đặt", "✅");
+        return;
+    }
+
+    // Nhân bản toàn bộ giao diện HTML hiện tại
+    const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    
+    const now = new Date();
+    const dateStr = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    a.download = `Deutsch_Pro_Trainer_Offline_${dateStr}.html`;
+    
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    
+    showCustomAlert("Đã tải HTML về máy. Bạn có thể mở file này học không cần mạng. Khi điện thoại có mạng, file vẫn sẽ tự động nối với Firebase để đồng bộ tiến độ học lên Mây.", "Tải Offline Hoàn Tất", "📥");
+}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 /* === HỆ THỐNG TỰ ĐỘNG LƯU & ĐỒNG BỘ CLOUD FIREBASE CHUẨN MỚI === */
 let cloudSaveTimeout = null;
@@ -146417,12 +146468,12 @@ async function checkUserPinAndSync() {
 
     // Đợi Firebase load xong mới chạy tiếp (Khắc phục lỗi mạng chậm)
     if (!window.db) {
-        console.log("⏳ Đang đợi Firebase tải...");
+        console.log("⏳ Warten auf den Datenabruf...");
         setTimeout(checkUserPinAndSync, 200);
         return;
     }
 
-    updateSyncStatusUI("Đang tải mây...");
+    updateSyncStatusUI("Wird geladen...");
     try {
         const userDocRef = window.doc(window.db, "user_progress", userPin);
         const docSnap = await window.getDoc(userDocRef);
@@ -146436,9 +146487,9 @@ async function checkUserPinAndSync() {
 
             // NẾU LOCAL MỚI HƠN CLOUD -> Đẩy Local lên cứu Cloud
             if (new Date(localTimestamp) > new Date(cloudTimestamp)) {
-                console.log("Dữ liệu trên máy mới hơn Mây. Đang đẩy lên Mây...");
+                console.log("Die Daten auf dem Gerät sind aktueller als die in der Cloud..");
                 await forceImmediateSave();
-                updateSyncStatusUI("Đã cứu dữ liệu lên Mây");
+                updateSyncStatusUI("Die Daten wurden gespeichert.");
                 return;
             }
 
@@ -146456,7 +146507,7 @@ async function checkUserPinAndSync() {
                 localStorage.setItem('b2_pro_v1', JSON.stringify(mastery));
                 localStorage.setItem('b2_last_updated', cloudTimestamp); // Cập nhật lại thời gian local khớp mây
                 
-                updateSyncStatusUI("Mây đã đồng bộ");
+                updateSyncStatusUI("Die Daten wurden synchronisiert.");
                 renderList();
                 renderHeat();
             }
@@ -146465,8 +146516,8 @@ async function checkUserPinAndSync() {
             updateSyncStatusUI("Tạo kho Mây mới");
         }
     } catch (err) {
-        console.error("Lỗi lấy dữ liệu từ Cloud:", err);
-        updateSyncStatusUI("Lỗi mây (Dùng local)");
+        console.error("Fehler beim Abrufen von Daten aus der Cloud:", err);
+        updateSyncStatusUI("Cloud-Fehler (lokale Nutzung)");
     }
 }
 
@@ -148538,7 +148589,7 @@ window.addEventListener('DOMContentLoaded', () => {
 // Biến toàn cục quản lý phiên nhận diện
 let activeRecognition = null;
 
-function startSpeechPractice() {
+function startSpeechPractice(targetWord = "") {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
         alert("Trình duyệt không hỗ trợ nhận diện giọng nói. Hãy dùng Google Chrome nhé!");
@@ -148548,15 +148599,12 @@ function startSpeechPractice() {
     const inputField = document.getElementById('ans-input');
     if (!inputField) return;
 
-    // Màu xanh ngọc dịu nhẹ đồng bộ giao diện
     const activeColor = "#10b981"; 
     const defaultColor = "var(--border)";
 
-    // Nếu đang bật mà bấm lại nút Sprechen -> Tắt ngay lập tức
+    // Tắt ghi âm nếu đang chạy
     if (activeRecognition) {
-        try {
-            activeRecognition.abort();
-        } catch (e) {}
+        try { activeRecognition.abort(); } catch (e) {}
         activeRecognition = null;
         inputField.placeholder = "Gõ từ gốc / cụm từ...";
         inputField.style.borderColor = defaultColor;
@@ -148569,37 +148617,30 @@ function startSpeechPractice() {
     recognition.lang = 'de-DE';
     recognition.interimResults = true;
     
-    // Đã thay đổi: Trên điện thoại nên để continuous = false đối với các cụm từ ngắn
-    // để tránh bị lặp vòng lặp API của Google, nhưng nếu bạn muốn đọc câu dài thì giữ true.
-    // Ở đây giữ true và sửa logic đọc mảng để chống lặp chữ.
-    recognition.continuous = true; 
+    // ĐIỂM QUYẾT ĐỊNH: Đặt false để diệt sạch lỗi lặp chữ trên Android
+    recognition.continuous = false; 
     recognition.maxAlternatives = 1;
 
-    inputField.value = ""; // Xóa trắng ô input ngay khi bắt đầu
-    inputField.placeholder = "🎙️ Đang nghe... (Bấm Sprechen để dừng)";
+    inputField.value = ""; 
+    inputField.placeholder = "🎙️ Đang nghe... (Cứ nói từ từ, máy đang thu)";
     inputField.style.borderColor = activeColor; 
 
-    // CHỈNH SỬA CHÍNH NẰM Ở ĐÂY
-    recognition.onresult = (event) => {
-        let finalTranscript = '';
-        let interimTranscript = '';
+    let currentSessionFinal = '';
 
-        // Thay vì push vào mảng, ta duyệt trực tiếp từ i = 0 để lấy câu hoàn chỉnh nhất
-        for (let i = 0; i < event.results.length; ++i) {
+    recognition.onresult = (event) => {
+        let interimTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
-                finalTranscript += event.results[i][0].transcript + ' ';
+                currentSessionFinal += event.results[i][0].transcript + ' ';
             } else {
                 interimTranscript += event.results[i][0].transcript;
             }
         }
-
-        // Gộp chuỗi hoàn chỉnh và chuỗi tạm thời, loại bỏ khoảng trắng thừa
-        const fullSpokenText = (finalTranscript + interimTranscript).replace(/\s+/g, ' ').trim();
+        const fullSpokenText = (currentSessionFinal + interimTranscript).replace(/\s+/g, ' ').trim();
         inputField.value = fullSpokenText;
     };
 
     recognition.onerror = (event) => {
-        console.error("Speech error:", event.error);
         activeRecognition = null;
         inputField.placeholder = "Gõ từ gốc / cụm từ...";
         inputField.style.borderColor = defaultColor;
@@ -148609,11 +148650,15 @@ function startSpeechPractice() {
         activeRecognition = null;
         inputField.placeholder = "Gõ từ gốc / cụm từ...";
         inputField.style.borderColor = defaultColor;
+        
+        // Tự động kiểm tra đáp án ngay sau khi bạn dứt câu (rảnh tay hoàn toàn)
+        if (inputField.value.trim() !== "") {
+            setTimeout(() => processCheck(), 200);
+        }
     };
 
     recognition.start();
 }
-
 
 
 
